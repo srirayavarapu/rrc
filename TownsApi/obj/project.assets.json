@@ -3638,11 +3638,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\srira\\Downloads\\TownsApi\\TownsApi\\TownsApi.csproj",
+      "projectUniqueName": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\TownsApi.csproj",
       "projectName": "TownsApi",
-      "projectPath": "C:\\Users\\srira\\Downloads\\TownsApi\\TownsApi\\TownsApi.csproj",
+      "projectPath": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\TownsApi.csproj",
       "packagesPath": "C:\\Users\\srira\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\srira\\Downloads\\TownsApi\\TownsApi\\obj\\",
+      "outputPath": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
