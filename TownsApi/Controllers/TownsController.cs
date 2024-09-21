@@ -16,7 +16,7 @@ namespace TownsApi.Controllers
             _context = context;
         }
 
-        [HttpGet("/inouts/api/[controller]/[action]")]
+        [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllTowns()
@@ -65,64 +65,64 @@ namespace TownsApi.Controllers
             }
 
         }
-        //[HttpGet("/inouts/api/[controller]/[action]")]
-        //[Authorize]
-        //public async Task<IActionResult> GetTownDetails(int id)
-        //{
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [Authorize]
+        public async Task<IActionResult> GetTownDetails(int id)
+        {
 
-        //    var newUser = await _context.Towns.Where(u => u.TownId == id).ToListAsync();
-        //    if (newUser.Count() == 0)
-        //    {
-        //        ResultObject patResult = new ResultObject
-        //        {
-        //            Status = false,
-        //            StatusCode = StatusCodes.Status204NoContent,
-        //            token = null,
-        //            data = null,
-        //            Message = "No town exists with this Id"
-        //        };
-        //        return Ok(patResult);
-        //    }
+            var newUser = await _context.Towns.Where(u =>int.Parse( u.TownId) == id).ToListAsync();
+            if (newUser.Count() == 0)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = "No town exists with this Id"
+                };
+                return Ok(patResult);
+            }
 
-        //    try
-        //    {
-        //        ResultObject successResult = new ResultObject
-        //        {
-        //            Status = true,
-        //            StatusCode = StatusCodes.Status200OK,
-        //            token = null,
-        //            data = newUser,
-        //            Message = "Employee deleted successfully"
-        //        };
-        //        return Ok(successResult);
+            try
+            {
+                ResultObject successResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    data = newUser,
+                    Message = "Employee deleted successfully"
+                };
+                return Ok(successResult);
 
-        //    }
-        //    catch (DbUpdateConcurrencyException ex)
-        //    {
-        //        ResultObject patResult = new ResultObject
-        //        {
-        //            Status = false,
-        //            StatusCode = StatusCodes.Status204NoContent,
-        //            token = null,
-        //            data = null,
-        //            Message = ex.Message
-        //        };
-        //        return Ok(patResult);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ResultObject patResult = new ResultObject
-        //        {
-        //            Status = false,
-        //            StatusCode = StatusCodes.Status204NoContent,
-        //            token = null,
-        //            data = null,
-        //            Message = ex.Message
-        //        };
-        //        return Ok(patResult);
-        //    }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = ex.Message
+                };
+                return Ok(patResult);
+            }
 
-        //}
+        }
     }
 
 }
