@@ -8,6 +8,6 @@ namespace TownsApi.Data
         {
         }
         public DbSet<Models.Towns>? Towns { get; set; }
-
+        public DbSet<Models.TaxPayer>? TaxPayer { get; set; }
     }
 }

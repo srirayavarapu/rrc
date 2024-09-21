@@ -47,4 +47,66 @@ namespace TownsApi.Models
         public object? data { get; set; }
     }
 
+
+    public class TaxPayer
+    {
+        [Key]
+        public int accountno { get; set; }
+        public string nbrhd { get; set; }
+        public string owner { get; set; }
+        public DateTime inputdate { get; set; }
+        public int locnum { get; set; }
+        public string locsuffix { get; set; }
+        public string locstreet { get; set; }
+        public string dba { get; set; }
+        public string mailaddr1 { get; set; }
+        public string mailaddr2 { get; set; }
+        public string mailcity { get; set; }
+        public string mailstate { get; set; }
+        public string mailzip { get; set; }
+        public string areacode { get; set; }
+        public string phone { get; set; }
+        public string source { get; set; }
+        public string taxcode { get; set; }
+        public string datalister { get; set; }
+        public string entryclerk { get; set; }
+        public decimal totalvalue { get; set; }
+        public decimal oldtotal1 { get; set; }
+        public decimal oldtotal2 { get; set; }
+        public decimal oldtotal3 { get; set; }
+        public DateTime listdate { get; set; }
+        public string busntype { get; set; }
+        public string user1 { get; set; }
+        public string user2 { get; set; }
+        public string user3 { get; set; }
+        public string user4 { get; set; }
+        public DateTime lastinput { get; set; }
+        public string status { get; set; }
+        public decimal growth { get; set; }
+        public string notes { get; set; }
+        public string penalty { get; set; }
+        public decimal exemption { get; set; }
+        public string emailid { get; set; }
+        public decimal penaltyval { get; set; }
+        public decimal netvalue { get; set; }
+        public string commno { get; set; }
+        public decimal iTotal { get; set; }
+        public decimal fTotal { get; set; }
+        public decimal pTotal { get; set; }
+        public decimal oTotal { get; set; }
+        public decimal mTotal { get; set; }
+        public string Action { get; set; }
+        public string FOL { get; set; }
+        public string WebAddress { get; set; }
+        public string FId { get; set; }
+        public byte[] RowVer { get; set; }
+        public string EditUser { get; set; }
+        public DateTime EditDate { get; set; }
+        public string EntryUser { get; set; }
+        public DateTime EntryDate { get; set; }
+        public string Password { get; set; }
+        public string FOLEmail { get; set; }
+
+    }
+
 }

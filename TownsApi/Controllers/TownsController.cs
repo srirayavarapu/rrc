@@ -65,12 +65,12 @@ namespace TownsApi.Controllers
             }
 
         }
+
         [HttpGet("/rrc/api/[controller]/[action]")]
-        [Authorize]
         public async Task<IActionResult> GetTownDetails(int id)
         {
 
-            var newUser = await _context.Towns.Where(u =>int.Parse( u.TownId) == id).ToListAsync();
+            var newUser = await _context.Towns.Where(u =>u.TownId == id.ToString()).ToListAsync();
             if (newUser.Count() == 0)
             {
                 ResultObject patResult = new ResultObject
@@ -118,6 +118,57 @@ namespace TownsApi.Controllers
                     token = null,
                     data = null,
                     Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+
+        }
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllTaxPayers()
+        {
+            try
+            {
+                var users = await _context.TaxPayer.ToListAsync();
+
+                if (users.Count() <= 0)
+                {
+
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status401Unauthorized,
+                        token = null,
+                        Message = "No Taxpayers exists",
+                        data = null
+                    };
+                    return Ok(patResult);
+                }
+
+
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = users
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
                 };
                 return Ok(patResult);
             }
