@@ -5,7 +5,7 @@ namespace TownsApi.Models
     public class Towns
     {
         [Key]
-        public int TownId { get; set; }
+        public string? TownId { get; set; }
         public string? TownName { get; set; }
         public int Taxpayer { get; set; }
         public int? Properties { get; set; }
