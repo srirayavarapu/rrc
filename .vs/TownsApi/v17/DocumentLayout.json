@@ -210,7 +210,8 @@
               "RelativeToolTip": "TownsApi\\Models\\Towns.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAADQAAAANAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T14:41:57.951Z"
+              "WhenOpened": "2024-08-31T14:41:57.951Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -260,7 +261,8 @@
               "RelativeToolTip": "TownsApi\\Program.cs",
               "ViewState": "AQIAABQAAAAAAAAAAAAQwCIAAAASAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T07:07:31.306Z"
+              "WhenOpened": "2024-08-31T07:07:31.306Z",
+              "EditorCaption": ""
             }
           ]
         }
