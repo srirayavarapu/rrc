@@ -1,8 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using System.Numerics;
+using System;
 using TownsApi.Data;
 using TownsApi.Models;
+using static Azure.Core.HttpHeader;
+using Microsoft.IdentityModel.Tokens;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace TownsApi.Controllers
 {
@@ -70,7 +77,7 @@ namespace TownsApi.Controllers
         public async Task<IActionResult> GetTownDetails(int id)
         {
 
-            var newUser = await _context.Towns.Where(u =>u.TownId == id.ToString()).ToListAsync();
+            var newUser = await _context.Towns.Where(u => u.TownId == id.ToString()).ToListAsync();
             if (newUser.Count() == 0)
             {
                 ResultObject patResult = new ResultObject
@@ -176,8 +183,8 @@ namespace TownsApi.Controllers
         }
 
 
-        [HttpPut("/towns/api/[controller]/[action]")]
-        public async Task<IActionResult> UpdateTownD(Towns con)
+        [HttpPut("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> UpdateTown(Towns con)
         {
 
             var newUser = await _context.Towns.Where(u => u.TownId == con.TownId).ToListAsync();
@@ -345,7 +352,7 @@ namespace TownsApi.Controllers
 
         }
 
-        [HttpPut("/towns/api/[controller]/[action]")]
+        [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> AddTown(Towns con)
         {
 
@@ -458,6 +465,129 @@ namespace TownsApi.Controllers
             {
                 con.lng = con.GrowthYr;
             }
+            _context.Add(con);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                ResultObject successResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    data = con,
+                    Message = "Updated successfully"
+                };
+                return Ok(successResult);
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> AddTaxPayer(TaxPayer con)
+        {
+
+
+
+
+            if (!string.IsNullOrEmpty(con.nbrhd))
+            {
+                con.nbrhd = con.nbrhd;
+            }
+            if (!string.IsNullOrEmpty(con.owner))
+            {
+                con.owner = con.owner;
+            }
+
+            con.inputdate = con.inputdate;
+
+            con.locnum = con.locnum;
+
+            if (!string.IsNullOrEmpty(con.locsuffix))
+            {
+                con.locsuffix = con.locsuffix;
+            }
+            if (!string.IsNullOrEmpty(con.locstreet))
+            {
+                con.locstreet = con.locstreet;
+            }
+            if (!string.IsNullOrEmpty(con.dba))
+            {
+                con.dba = con.dba;
+            }
+            if (!string.IsNullOrEmpty(con.mailaddr1))
+            {
+                con.mailaddr1 = con.mailaddr1;
+            }
+            if (!string.IsNullOrEmpty(con.mailaddr2))
+            {
+                con.mailaddr2 = con.mailaddr2;
+            }
+            if (!string.IsNullOrEmpty(con.mailcity))
+            {
+                con.mailcity = con.mailcity;
+            }
+            if (!string.IsNullOrEmpty(con.mailstate))
+            {
+                con.mailstate = con.mailstate;
+            }
+            if (!string.IsNullOrEmpty(con.mailzip))
+            {
+                con.mailzip = con.mailzip;
+            }
+            if (!string.IsNullOrEmpty(con.areacode))
+            {
+                con.areacode = con.areacode;
+            }
+            if (!string.IsNullOrEmpty(con.phone))
+            {
+                con.phone = con.phone;
+            }
+            if (!string.IsNullOrEmpty(con.source))
+            {
+                con.source = con.source;
+            }
+            if (!string.IsNullOrEmpty(con.taxcode))
+            {
+                con.taxcode = con.taxcode;
+            }
+            con.datalister = con.datalister;
+            con.entryclerk = con.entryclerk;
+            con.totalvalue = con.totalvalue;
+            con.oldtotal1 = con.oldtotal1;
+            con.oldtotal2 = con.oldtotal2;
+            con.oldtotal3 = con.oldtotal3;
+            con.listdate = con.listdate;
+            con.busntype = con.busntype;
+            con.user1 = con.user1;
+            con.user2 = con.user2;
+            con.user3 = con.user3;
+            con.user4 = con.user4;
+
             _context.Add(con);
 
             try
