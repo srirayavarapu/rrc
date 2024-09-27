@@ -587,6 +587,7 @@ namespace TownsApi.Controllers
             con.user2 = con.user2;
             con.user3 = con.user3;
             con.user4 = con.user4;
+            //con.RowVer=new byte[4];
 
             _context.Add(con);
 
@@ -625,6 +626,63 @@ namespace TownsApi.Controllers
                     token = null,
                     data = null,
                     Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+
+        }
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetLookUPValues()
+        {
+            try
+            {
+                LookUPData lookUPData = new LookUPData();
+                var users = await _context.pricingManual.ToListAsync();
+                users = users.Take(100).ToList();
+                var propertyType = await _context.propertyType.ToListAsync();
+                var Deprec = await _context.Deprec.ToListAsync();
+                lookUPData.propertyType = propertyType;
+                lookUPData.pricingManual = users;
+                lookUPData.Deprec= Deprec;
+                if (users.Count() <= 0)
+                {
+
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status401Unauthorized,
+                        token = null,
+                        Message = "No Taxpayers exists",
+                        data = null
+                    };
+                    return Ok(patResult);
+                }
+
+
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = lookUPData
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
                 };
                 return Ok(patResult);
             }

@@ -9,5 +9,8 @@ namespace TownsApi.Data
         }
         public DbSet<Models.Towns>? Towns { get; set; }
         public DbSet<Models.TaxPayer>? TaxPayer { get; set; }
+        public DbSet<Models.pricingManual>? pricingManual { get; set; }
+        public DbSet<Models.propertyType>? propertyType { get; set; }
+        public DbSet<Models.Deprec>? Deprec { get; set; }
     }
 }

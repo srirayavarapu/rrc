@@ -14,7 +14,7 @@ namespace TownsApi.Models
         public decimal? TaxRate { get; set; }
         public decimal? GrowthAmt { get; set; }
         public decimal? GrowthYr { get; set; }
-        public string? Contact { get; set; }        
+        public string? Contact { get; set; }
         public string? Address1 { get; set; }
         public string? Address2 { get; set; }
         public string? City { get; set; }
@@ -28,7 +28,7 @@ namespace TownsApi.Models
         public bool? CurrentActive { get; set; }
         public bool? RRCPP { get; set; }
         public string? SnapShots { get; set; }
-        public string?LoginTimeFrom { get; set; }
+        public string? LoginTimeFrom { get; set; }
         public string? LoginTimeTo { get; set; }
         public string? AllowedIPs { get; set; }
         public string? FTPInfo { get; set; }
@@ -99,7 +99,7 @@ namespace TownsApi.Models
         public string FOL { get; set; }
         public string WebAddress { get; set; }
         public string FId { get; set; }
-        public byte[] RowVer { get; set; }
+        //public byte[] RowVer { get; set; }
         public string EditUser { get; set; }
         public DateTime EditDate { get; set; }
         public string EntryUser { get; set; }
@@ -109,4 +109,35 @@ namespace TownsApi.Models
 
     }
 
+    public class pricingManual
+    {
+        [Key]
+        public short PMYear { get; set; }
+        public string pricecode { get; set; }
+        public string descript { get; set; }
+        public decimal unitcost { get; set; }
+        public string category { get; set; }
+
+    }
+
+    public class propertyType
+    {
+        [Key]
+        public string proptype { get; set; }
+        public string descript { get; set; }
+        public string exemption { get; set; }
+    }
+    public class Deprec
+    {
+        [Key]
+        public int age { get; set; }
+        public string cond { get; set; }
+        public decimal Dpercent { get; set; }
+    }
+    public class LookUPData
+    {
+        public List<pricingManual>? pricingManual { get; set; }
+        public List<propertyType>? propertyType { get; set; }
+         public List<Deprec> Deprec { get; set; }
+    }
 }
