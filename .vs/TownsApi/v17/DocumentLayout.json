@@ -210,8 +210,7 @@
               "RelativeToolTip": "TownsApi\\Models\\Towns.cs",
               "ViewState": "AQIAAC8AAAAAAAAAAAAvwIwAAAAxAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T14:41:57.951Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T14:41:57.951Z"
             },
             {
               "$type": "Document",
@@ -223,8 +222,7 @@
               "RelativeToolTip": "TownsApi\\Data\\TownDBContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAArAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T14:40:40.652Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T14:40:40.652Z"
             },
             {
               "$type": "Document",
@@ -234,7 +232,7 @@
               "RelativeDocumentMoniker": "TownsApi\\Controllers\\TownsController.cs",
               "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Controllers\\TownsController.cs",
               "RelativeToolTip": "TownsApi\\Controllers\\TownsController.cs",
-              "ViewState": "AQIAAI0CAAAAAAAAAAAIwKECAAAQAAAA",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAWAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-31T14:35:14.49Z",
               "EditorCaption": ""
@@ -261,8 +259,7 @@
               "RelativeToolTip": "TownsApi\\Program.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAA0AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T07:07:31.306Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T07:07:31.306Z"
             }
           ]
         }
