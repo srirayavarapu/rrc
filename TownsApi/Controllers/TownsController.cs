@@ -74,6 +74,56 @@ namespace TownsApi.Controllers
         }
 
         [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllProperties()
+        {
+            try
+            {
+                var users = await _context.property.ToListAsync();
+
+                if (users.Count() <= 0)
+                {
+
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status401Unauthorized,
+                        token = null,
+                        Message = "No town exists",
+                        data = null
+                    };
+                    return Ok(patResult);
+                }
+
+
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = users
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
+                };
+                return Ok(patResult);
+            }
+
+        }
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> GetTownDetails(int id)
         {
 
@@ -510,10 +560,7 @@ namespace TownsApi.Controllers
         [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> AddTaxPayer(TaxPayer con)
         {
-
-
-
-
+            List<TaxPayer> taxPayers=new List<TaxPayer>();
             if (!string.IsNullOrEmpty(con.nbrhd))
             {
                 con.nbrhd = con.nbrhd;
@@ -594,6 +641,7 @@ namespace TownsApi.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+                taxPayers = await _context.TaxPayer?.ToListAsync();
                 ResultObject successResult = new ResultObject
                 {
                     Status = true,
@@ -647,7 +695,7 @@ namespace TownsApi.Controllers
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;
                 lookUPData.pricingManual = users;
-                lookUPData.Deprec= Deprec;
+                lookUPData.Deprec = Deprec;
                 if (users.Count() <= 0)
                 {
 
@@ -688,6 +736,131 @@ namespace TownsApi.Controllers
             }
 
         }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> AddProperty(property con)
+        {
+            List<property> properties = new List<property>();
+            //if (!string.IsNullOrEmpty(con.nbrhd))
+            //{
+            //    con.nbrhd = con.nbrhd;
+            //}
+            //if (!string.IsNullOrEmpty(con.owner))
+            //{
+            //    con.owner = con.owner;
+            //}
+
+            //con.inputdate = con.inputdate;
+
+            //con.locnum = con.locnum;
+
+            //if (!string.IsNullOrEmpty(con.locsuffix))
+            //{
+            //    con.locsuffix = con.locsuffix;
+            //}
+            //if (!string.IsNullOrEmpty(con.locstreet))
+            //{
+            //    con.locstreet = con.locstreet;
+            //}
+            //if (!string.IsNullOrEmpty(con.dba))
+            //{
+            //    con.dba = con.dba;
+            //}
+            //if (!string.IsNullOrEmpty(con.mailaddr1))
+            //{
+            //    con.mailaddr1 = con.mailaddr1;
+            //}
+            //if (!string.IsNullOrEmpty(con.mailaddr2))
+            //{
+            //    con.mailaddr2 = con.mailaddr2;
+            //}
+            //if (!string.IsNullOrEmpty(con.mailcity))
+            //{
+            //    con.mailcity = con.mailcity;
+            //}
+            //if (!string.IsNullOrEmpty(con.mailstate))
+            //{
+            //    con.mailstate = con.mailstate;
+            //}
+            //if (!string.IsNullOrEmpty(con.mailzip))
+            //{
+            //    con.mailzip = con.mailzip;
+            //}
+            //if (!string.IsNullOrEmpty(con.areacode))
+            //{
+            //    con.areacode = con.areacode;
+            //}
+            //if (!string.IsNullOrEmpty(con.phone))
+            //{
+            //    con.phone = con.phone;
+            //}
+            //if (!string.IsNullOrEmpty(con.source))
+            //{
+            //    con.source = con.source;
+            //}
+            //if (!string.IsNullOrEmpty(con.taxcode))
+            //{
+            //    con.taxcode = con.taxcode;
+            //}
+            //con.datalister = con.datalister;
+            //con.entryclerk = con.entryclerk;
+            //con.totalvalue = con.totalvalue;
+            //con.oldtotal1 = con.oldtotal1;
+            //con.oldtotal2 = con.oldtotal2;
+            //con.oldtotal3 = con.oldtotal3;
+            //con.listdate = con.listdate;
+            //con.busntype = con.busntype;
+            //con.user1 = con.user1;
+            //con.user2 = con.user2;
+            //con.user3 = con.user3;
+            //con.user4 = con.user4;
+            //con.RowVer=new byte[4];
+
+            _context.Add(con);
+
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                properties = await _context?.property?.ToListAsync();
+                ResultObject successResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    data = properties,
+                    Message = "Property added successfully"
+                };
+                return Ok(successResult);
+
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = ex.Message
+                };
+                return Ok(patResult);
+            }
+
+        }
+
     }
 
 }

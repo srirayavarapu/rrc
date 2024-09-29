@@ -140,4 +140,32 @@ namespace TownsApi.Models
         public List<propertyType>? propertyType { get; set; }
          public List<Deprec> Deprec { get; set; }
     }
+
+    public class property
+    {
+        [Key]
+        public int PropertyNo { get; set; }
+        public int accountno { get; set; }
+        public string proptype { get; set; }
+        public int quantity { get; set; }
+        public string deprecode { get; set; }
+        public decimal dpercent { get; set; }
+        public string pricecode { get; set; }
+        public string descrption { get; set; }
+        public decimal itemcost { get; set; }
+        public decimal replmtcost { get; set; }
+        public decimal deptotal { get; set; }
+        public int leasee { get; set; }
+        public short newyear { get; set; }
+        public short serviceyr { get; set; }
+        public string status { get; set; }
+        public decimal Exemption { get; set; }     
+        //public byte[] RowVer { get; set; }
+        public string EntryUser { get; set; }
+        public DateTime EntryDate { get; set; }
+        public string EditUser { get; set; }
+        public DateTime EditDate { get; set; }
+        public DateTime Acquired { get; set; }
+
+    }
 }

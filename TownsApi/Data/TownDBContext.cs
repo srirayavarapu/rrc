@@ -12,5 +12,6 @@ namespace TownsApi.Data
         public DbSet<Models.pricingManual>? pricingManual { get; set; }
         public DbSet<Models.propertyType>? propertyType { get; set; }
         public DbSet<Models.Deprec>? Deprec { get; set; }
+        public DbSet<Models.property>? property { get; set; }
     }
 }
