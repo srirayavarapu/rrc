@@ -134,11 +134,19 @@ namespace TownsApi.Models
         public string cond { get; set; }
         public decimal Dpercent { get; set; }
     }
+
+    public class TaxCode
+    {
+        public int id { get; set; }
+        public string code { get; set; }
+        public string displayValue { get; set; }
+    }
     public class LookUPData
     {
         public List<pricingManual>? pricingManual { get; set; }
         public List<propertyType>? propertyType { get; set; }
-         public List<Deprec> Deprec { get; set; }
+        public List<Deprec> Deprec { get; set; }
+        public List<TaxCode> taxcode { get; set; }
     }
 
     public class property
@@ -159,7 +167,7 @@ namespace TownsApi.Models
         public short newyear { get; set; }
         public short serviceyr { get; set; }
         public string status { get; set; }
-        public decimal Exemption { get; set; }     
+        public decimal Exemption { get; set; }
         //public byte[] RowVer { get; set; }
         public string EntryUser { get; set; }
         public DateTime EntryDate { get; set; }

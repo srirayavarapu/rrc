@@ -561,6 +561,11 @@ namespace TownsApi.Controllers
         public async Task<IActionResult> AddTaxPayer(TaxPayer con)
         {
             List<TaxPayer> taxPayers=new List<TaxPayer>();
+            Random random=new Random();
+            if(con.accountno==0)
+            {
+                con.accountno = random.Next(5000, 9999);
+            }
             if (!string.IsNullOrEmpty(con.nbrhd))
             {
                 con.nbrhd = con.nbrhd;
@@ -692,6 +697,8 @@ namespace TownsApi.Controllers
                 var users = await _context.pricingManual.ToListAsync();
                 users = users.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
+                List<TaxCode> taxCodes = new List<TaxCode>();
+                lookUPData.taxcode = taxCodes;
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;
                 lookUPData.pricingManual = users;
