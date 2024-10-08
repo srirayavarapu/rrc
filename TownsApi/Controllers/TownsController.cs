@@ -698,6 +698,8 @@ namespace TownsApi.Controllers
                 users = users.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
                 List<TaxCode> taxCodes = new List<TaxCode>();
+                List<BusinessType> businessTypes = new List<BusinessType>();
+                //taxCodes.Add(new TaxCode() { code="501",displayValue="INDIVIDUAL",id="501"});
                 lookUPData.taxcode = taxCodes;
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;

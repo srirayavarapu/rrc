@@ -43,7 +43,6 @@ namespace TownsApi.Models
         public int StatusCode { get; set; }
         public string? Message { get; set; }
         public string? token { get; set; }
-
         public object? data { get; set; }
     }
 
@@ -137,9 +136,15 @@ namespace TownsApi.Models
 
     public class TaxCode
     {
-        public int id { get; set; }
-        public string code { get; set; }
-        public string displayValue { get; set; }
+        public string entryval { get; set; }
+        public string entrydescval { get; set; }
+        public string descript { get; set; }
+    }
+    public class BusinessType
+    {
+        public string entryval { get; set; }
+        public string entrydescval { get; set; }
+        public string descript { get; set; }
     }
     public class LookUPData
     {
@@ -147,6 +152,7 @@ namespace TownsApi.Models
         public List<propertyType>? propertyType { get; set; }
         public List<Deprec> Deprec { get; set; }
         public List<TaxCode> taxcode { get; set; }
+        public List<BusinessType> businesstype { get; set; }
     }
 
     public class property
@@ -176,4 +182,37 @@ namespace TownsApi.Models
         public DateTime Acquired { get; set; }
 
     }
+
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+    public class EntityKey
+    {
+        public string EntitySetName { get; set; }
+        public string EntityContainerName { get; set; }
+        public List<EntityKeyValue> EntityKeyValues { get; set; }
+        public bool IsTemporary { get; set; }
+    }
+
+    public class EntityKeyValue
+    {
+        public string Key { get; set; }
+        public object Value { get; set; }
+    }
+
+    public class Item
+    {
+        public int PMYear { get; set; }
+        public string pricecode { get; set; }
+        public string descript { get; set; }
+        public int unitcost { get; set; }
+        public string category { get; set; }
+        public int EntityState { get; set; }
+        public EntityKey EntityKey { get; set; }
+    }
+
+    public class pricecodelist
+    {
+        public List<Item> Items { get; set; }
+    }
+
+
 }
