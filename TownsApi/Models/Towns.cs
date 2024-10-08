@@ -140,6 +140,13 @@ namespace TownsApi.Models
         public string entrydescval { get; set; }
         public string descript { get; set; }
     }
+
+    public class Penalty
+    {
+        public string entryval { get; set; }
+        public string entrydescval { get; set; }
+        public string descript { get; set; }
+    }
     public class BusinessType
     {
         public string entryval { get; set; }
@@ -153,6 +160,7 @@ namespace TownsApi.Models
         public List<Deprec> Deprec { get; set; }
         public List<TaxCode> taxcode { get; set; }
         public List<BusinessType> businesstype { get; set; }
+        public List<Penalty> penalty { get; set; }
     }
 
     public class property

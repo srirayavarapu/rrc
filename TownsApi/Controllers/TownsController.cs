@@ -698,6 +698,7 @@ namespace TownsApi.Controllers
                 users = users.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
                 List<TaxCode> taxCodes = new List<TaxCode>();
+                List<Penalty> penalties = new List<Penalty>();
                 taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACCT" });
                 taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADVR" });
                 taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMUZ" });
@@ -707,13 +708,15 @@ namespace TownsApi.Controllers
                 businessTypes.Add(new BusinessType() { descript = "3", entrydescval = "502 -CORPORATION (DOMESTIC/FOREIGN)", entryval = "502" });
 
                 businessTypes.Add(new BusinessType() { descript = "4", entrydescval = "503 -MANUFACTURING CORPORATION (M)", entryval = "503" });
-
+                penalties.Add(new Penalty() { descript = "2", entrydescval = "Yes", entryval = "Y" });
+                penalties.Add(new Penalty() { descript = "3", entrydescval = "No", entryval = "N" });
                 lookUPData.taxcode = taxCodes;
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;
                 lookUPData.pricingManual = users;
                 lookUPData.businesstype=businessTypes;
                 lookUPData.taxcode = taxCodes;
+                lookUPData.penalty = penalties;
                 lookUPData.Deprec = Deprec;
                 if (users.Count() <= 0)
                 {
