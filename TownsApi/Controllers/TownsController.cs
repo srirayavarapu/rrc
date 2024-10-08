@@ -1086,79 +1086,74 @@ namespace TownsApi.Controllers
         public async Task<IActionResult> AddProperty(property con)
         {
             List<property> properties = new List<property>();
-            //if (!string.IsNullOrEmpty(con.nbrhd))
-            //{
-            //    con.nbrhd = con.nbrhd;
-            //}
-            //if (!string.IsNullOrEmpty(con.owner))
-            //{
-            //    con.owner = con.owner;
-            //}
+            if (!string.IsNullOrEmpty(con.deprecode))
+            {
+                if (con.deprecode.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "deprecode Must be 2 Character"
+                    };
+                    return Ok(patResult);
 
-            //con.inputdate = con.inputdate;
+                }
+            }
 
-            //con.locnum = con.locnum;
+            if (!string.IsNullOrEmpty(con.deprecode))
+            {
+                if (con.deprecode.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "deprecode Must be 2 Character"
+                    };
+                    return Ok(patResult);
 
-            //if (!string.IsNullOrEmpty(con.locsuffix))
-            //{
-            //    con.locsuffix = con.locsuffix;
-            //}
-            //if (!string.IsNullOrEmpty(con.locstreet))
-            //{
-            //    con.locstreet = con.locstreet;
-            //}
-            //if (!string.IsNullOrEmpty(con.dba))
-            //{
-            //    con.dba = con.dba;
-            //}
-            //if (!string.IsNullOrEmpty(con.mailaddr1))
-            //{
-            //    con.mailaddr1 = con.mailaddr1;
-            //}
-            //if (!string.IsNullOrEmpty(con.mailaddr2))
-            //{
-            //    con.mailaddr2 = con.mailaddr2;
-            //}
-            //if (!string.IsNullOrEmpty(con.mailcity))
-            //{
-            //    con.mailcity = con.mailcity;
-            //}
-            //if (!string.IsNullOrEmpty(con.mailstate))
-            //{
-            //    con.mailstate = con.mailstate;
-            //}
-            //if (!string.IsNullOrEmpty(con.mailzip))
-            //{
-            //    con.mailzip = con.mailzip;
-            //}
-            //if (!string.IsNullOrEmpty(con.areacode))
-            //{
-            //    con.areacode = con.areacode;
-            //}
-            //if (!string.IsNullOrEmpty(con.phone))
-            //{
-            //    con.phone = con.phone;
-            //}
-            //if (!string.IsNullOrEmpty(con.source))
-            //{
-            //    con.source = con.source;
-            //}
-            //if (!string.IsNullOrEmpty(con.taxcode))
-            //{
-            //    con.taxcode = con.taxcode;
-            //}
-            //con.datalister = con.datalister;
-            //con.entryclerk = con.entryclerk;
-            //con.totalvalue = con.totalvalue;
-            //con.oldtotal1 = con.oldtotal1;
-            //con.oldtotal2 = con.oldtotal2;
-            //con.oldtotal3 = con.oldtotal3;
-            //con.listdate = con.listdate;
-            //con.busntype = con.busntype;
-            //con.user1 = con.user1;
-            //con.user2 = con.user2;
-            //con.user3 = con.user3;
-            //con.user4 = con.user4;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(con.pricecode))
+            {
+                if (con.pricecode.Length > 5)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "pricecode Must be 5 Character"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+
+            if (!string.IsNullOrEmpty(con.proptype))
+            {
+                if (con.proptype.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "proptype Must be 2 Character"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+           
             //con.RowVer=new byte[4];
 
             _context.Add(con);
