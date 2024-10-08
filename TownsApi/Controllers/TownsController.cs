@@ -560,9 +560,9 @@ namespace TownsApi.Controllers
         [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> AddTaxPayer(TaxPayer con)
         {
-            List<TaxPayer> taxPayers=new List<TaxPayer>();
-            Random random=new Random();
-            if(con.accountno==0)
+            List<TaxPayer> taxPayers = new List<TaxPayer>();
+            Random random = new Random();
+            if (con.accountno == 0)
             {
                 con.accountno = random.Next(5000, 9999);
             }
@@ -698,12 +698,22 @@ namespace TownsApi.Controllers
                 users = users.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
                 List<TaxCode> taxCodes = new List<TaxCode>();
+                taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACCT" });
+                taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADVR" });
+                taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMUZ" });
+
                 List<BusinessType> businessTypes = new List<BusinessType>();
-                //taxCodes.Add(new TaxCode() { code="501",displayValue="INDIVIDUAL",id="501"});
+                businessTypes.Add(new BusinessType() { descript = "2", entrydescval = "501 -INDIVIDUAL, PARTNERSHIP", entryval = "501" });
+                businessTypes.Add(new BusinessType() { descript = "3", entrydescval = "502 -CORPORATION (DOMESTIC/FOREIGN)", entryval = "502" });
+
+                businessTypes.Add(new BusinessType() { descript = "4", entrydescval = "503 -MANUFACTURING CORPORATION (M)", entryval = "503" });
+
                 lookUPData.taxcode = taxCodes;
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;
                 lookUPData.pricingManual = users;
+                lookUPData.businesstype=businessTypes;
+                lookUPData.taxcode = taxCodes;
                 lookUPData.Deprec = Deprec;
                 if (users.Count() <= 0)
                 {
