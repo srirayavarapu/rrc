@@ -56,7 +56,7 @@ namespace TownsApi.Models
         public DateTime inputdate { get; set; }
         public int locnum { get; set; }
         public string locsuffix { get; set; }
-        public string locstreet { get; set; }
+        public string? locstreet { get; set; }
         public string dba { get; set; }
         public string mailaddr1 { get; set; }
         public string mailaddr2 { get; set; }

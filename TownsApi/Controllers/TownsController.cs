@@ -639,7 +639,43 @@ namespace TownsApi.Controllers
             con.user2 = con.user2;
             con.user3 = con.user3;
             con.user4 = con.user4;
+            if (string.IsNullOrEmpty(con.locstreet))
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = "Please enter street "
+                };
+                return Ok(patResult);
+            }
+            if (string.IsNullOrEmpty(con.dba))
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = "Please enter dba"
+                };
+                return Ok(patResult);
+            }
 
+            if (string.IsNullOrEmpty(con.owner))
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = false,
+                    StatusCode = StatusCodes.Status204NoContent,
+                    token = null,
+                    data = null,
+                    Message = "Please enter owner"
+                };
+                return Ok(patResult);
+            }
             if (!string.IsNullOrEmpty(con.Action))
             {
                 con.Action = "Y";
@@ -974,7 +1010,7 @@ namespace TownsApi.Controllers
                 var propertyType = await _context.propertyType.ToListAsync();
                 List<TaxCode> taxCodes = new List<TaxCode>();
                 List<Penalty> penalties = new List<Penalty>();
-                List<Status> statuses=new List<Status>();
+                List<Status> statuses = new List<Status>();
                 taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACCT" });
                 taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADVR" });
                 taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMUZ" });
@@ -995,7 +1031,7 @@ namespace TownsApi.Controllers
                 statuses.Add(new Status() { descript = "2", entrydescval = "Retired", entryval = "R" });
                 statuses.Add(new Status() { descript = "3", entrydescval = "Under Taxable", entryval = "U" });
 
-               
+
                 lookUPData.taxcode = taxCodes;
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;
