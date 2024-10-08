@@ -65,20 +65,20 @@ namespace TownsApi.Models
         public string mailzip { get; set; }
         public string areacode { get; set; }
         public string phone { get; set; }
-        public string source { get; set; }
+        public string source { get; set; } = "";
         public string taxcode { get; set; }
-        public string datalister { get; set; }
-        public string entryclerk { get; set; }
+        public string datalister { get; set; } = "";
+        public string entryclerk { get; set; } = "";
         public decimal totalvalue { get; set; }
         public decimal oldtotal1 { get; set; }
         public decimal oldtotal2 { get; set; }
         public decimal oldtotal3 { get; set; }
         public DateTime listdate { get; set; }
         public string busntype { get; set; }
-        public string user1 { get; set; }
-        public string user2 { get; set; }
-        public string user3 { get; set; }
-        public string user4 { get; set; }
+        public string user1 { get; set; } = "";
+        public string user2 { get; set; } = "";
+        public string user3 { get; set; } = "";
+        public string user4 { get; set; } = "";
         public DateTime lastinput { get; set; }
         public string status { get; set; }
         public decimal growth { get; set; }
@@ -141,6 +141,12 @@ namespace TownsApi.Models
         public string descript { get; set; }
     }
 
+    public class Status
+    {
+        public string entryval { get; set; }
+        public string entrydescval { get; set; }
+        public string descript { get; set; }
+    }
     public class Penalty
     {
         public string entryval { get; set; }
@@ -161,6 +167,7 @@ namespace TownsApi.Models
         public List<TaxCode> taxcode { get; set; }
         public List<BusinessType> businesstype { get; set; }
         public List<Penalty> penalty { get; set; }
+        public List<Status> status { get; set; }
     }
 
     public class property

@@ -639,6 +639,280 @@ namespace TownsApi.Controllers
             con.user2 = con.user2;
             con.user3 = con.user3;
             con.user4 = con.user4;
+
+            if (!string.IsNullOrEmpty(con.Action))
+            {
+                con.Action = "Y";
+            }
+            if (!string.IsNullOrEmpty(con.Action))
+            {
+                if (con.Action.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "Action Must be 2 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.FOL))
+            {
+                con.FOL = "FO";
+            }
+            if (string.IsNullOrEmpty(con.FOL))
+            {
+                if (con.FOL.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "FOL Must be 2 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.FOL))
+            {
+                if (con.FOL.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "FOL Must be 2 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.areacode))
+            {
+                con.areacode = "301";
+            }
+            if (!string.IsNullOrEmpty(con.areacode))
+            {
+                if (con.areacode.Length > 3)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "areacode Must be 3 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+
+            if (!string.IsNullOrEmpty(con.busntype))
+            {
+                con.busntype = "ACC";
+            }
+            if (!string.IsNullOrEmpty(con.busntype))
+            {
+                if (con.busntype.Length > 4)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "busntype Must be 4 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.datalister))
+            {
+                con.datalister = "CY";
+            }
+            if (!string.IsNullOrEmpty(con.datalister))
+            {
+                if (con.datalister.Length > 3)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "datalister Must be 3 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.entryclerk))
+            {
+                con.entryclerk = "AA";
+            }
+            if (!string.IsNullOrEmpty(con.entryclerk))
+            {
+                if (con.entryclerk.Length > 3)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "entryclerk Must be 3 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.locsuffix))
+            {
+                con.locsuffix = "LOCS";
+            }
+            if (!string.IsNullOrEmpty(con.locsuffix))
+            {
+                if (con.locsuffix.Length > 4)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "locsuffix Must be 4 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.mailstate))
+            {
+                con.mailstate = "MA";
+            }
+            if (!string.IsNullOrEmpty(con.mailstate))
+            {
+                if (con.mailstate.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "mailstate Must be 2 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.mailstate))
+            {
+                if (con.mailstate.Length > 2)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "mailstate Must be 2 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.nbrhd))
+            {
+                con.nbrhd = "nbrh";
+            }
+            if (!string.IsNullOrEmpty(con.nbrhd))
+            {
+                if (con.nbrhd.Length > 4)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "nbrhd Must be 4 Characters"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.penalty))
+            {
+                con.penalty = "Y";
+            }
+            if (!string.IsNullOrEmpty(con.penalty))
+            {
+                if (con.penalty.Length > 1)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "penalty Must be 1 Character"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.status))
+            {
+                con.status = "U";
+            }
+            if (!string.IsNullOrEmpty(con.status))
+            {
+                if (con.status.Length > 1)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "status Must be 1 Character"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
+            if (!string.IsNullOrEmpty(con.taxcode))
+            {
+                con.taxcode = "301";
+            }
+            if (!string.IsNullOrEmpty(con.taxcode))
+            {
+                if (con.taxcode.Length > 3)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "taxcode Must be 3 Character"
+                    };
+                    return Ok(patResult);
+
+                }
+            }
             //con.RowVer=new byte[4];
 
             _context.Add(con);
@@ -653,7 +927,7 @@ namespace TownsApi.Controllers
                     StatusCode = StatusCodes.Status200OK,
                     token = null,
                     data = con,
-                    Message = "Updated successfully"
+                    Message = "Added successfully"
                 };
                 return Ok(successResult);
 
@@ -694,11 +968,13 @@ namespace TownsApi.Controllers
             try
             {
                 LookUPData lookUPData = new LookUPData();
+
                 var users = await _context.pricingManual.ToListAsync();
                 users = users.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
                 List<TaxCode> taxCodes = new List<TaxCode>();
                 List<Penalty> penalties = new List<Penalty>();
+                List<Status> statuses=new List<Status>();
                 taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACCT" });
                 taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADVR" });
                 taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMUZ" });
@@ -710,14 +986,25 @@ namespace TownsApi.Controllers
                 businessTypes.Add(new BusinessType() { descript = "4", entrydescval = "503 -MANUFACTURING CORPORATION (M)", entryval = "503" });
                 penalties.Add(new Penalty() { descript = "2", entrydescval = "Yes", entryval = "Y" });
                 penalties.Add(new Penalty() { descript = "3", entrydescval = "No", entryval = "N" });
+                statuses.Add(new Status() { descript = "2", entrydescval = "Delete", entryval = "D" });
+                statuses.Add(new Status() { descript = "3", entrydescval = "Exempt", entryval = "E" });
+
+                statuses.Add(new Status() { descript = "2", entrydescval = "Hold", entryval = "H" });
+                statuses.Add(new Status() { descript = "3", entrydescval = "Non Taxable", entryval = "N" });
+
+                statuses.Add(new Status() { descript = "2", entrydescval = "Retired", entryval = "R" });
+                statuses.Add(new Status() { descript = "3", entrydescval = "Under Taxable", entryval = "U" });
+
+               
                 lookUPData.taxcode = taxCodes;
                 var Deprec = await _context.Deprec.ToListAsync();
                 lookUPData.propertyType = propertyType;
                 lookUPData.pricingManual = users;
-                lookUPData.businesstype=businessTypes;
+                lookUPData.businesstype = businessTypes;
                 lookUPData.taxcode = taxCodes;
                 lookUPData.penalty = penalties;
                 lookUPData.Deprec = Deprec;
+                lookUPData.status = statuses;
                 if (users.Count() <= 0)
                 {
 
