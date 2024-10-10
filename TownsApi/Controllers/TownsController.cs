@@ -574,8 +574,10 @@ namespace TownsApi.Controllers
             {
                 con.owner = con.owner;
             }
-
-            con.inputdate = con.inputdate;
+            if (con.inputdate == null)
+            {
+                con.inputdate = DateTime.Now;
+            }
 
             con.locnum = con.locnum;
 
@@ -1103,9 +1105,9 @@ namespace TownsApi.Controllers
                 }
             }
 
-            if (!string.IsNullOrEmpty(con.deprecode))
+            if (!string.IsNullOrEmpty(con.status))
             {
-                if (con.deprecode.Length > 2)
+                if (con.status.Length > 2)
                 {
                     ResultObject patResult = new ResultObject
                     {
@@ -1113,7 +1115,7 @@ namespace TownsApi.Controllers
                         StatusCode = StatusCodes.Status204NoContent,
                         token = null,
                         data = null,
-                        Message = "deprecode Must be 2 Character"
+                        Message = "status Must be 1 Character"
                     };
                     return Ok(patResult);
 
@@ -1153,7 +1155,7 @@ namespace TownsApi.Controllers
 
                 }
             }
-           
+
             //con.RowVer=new byte[4];
 
             _context.Add(con);
