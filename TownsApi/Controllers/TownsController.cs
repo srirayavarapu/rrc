@@ -562,7 +562,7 @@ namespace TownsApi.Controllers
         {
             List<TaxPayer> taxPayers = new List<TaxPayer>();
             Random random = new Random();
-            if (con.accountno == 0)
+            if (con.accountno == 0 || con.accountno == null)
             {
                 con.accountno = random.Next(5000, 9999);
             }
@@ -930,6 +930,29 @@ namespace TownsApi.Controllers
                     return Ok(patResult);
 
                 }
+            }
+            if (!string.IsNullOrEmpty(con.phone))
+            {
+                if (con.phone.Length > 8)
+                {
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        data = null,
+                        Message = "phone  Must be 8 Character"
+                    };
+                    return Ok(patResult);
+                }
+            }
+            if (string.IsNullOrEmpty(con.busntype))
+            {
+                con.taxcode = "ACC";
+            }
+            if (string.IsNullOrEmpty(con.taxcode))
+            {
+                con.taxcode = "301";
             }
             if (!string.IsNullOrEmpty(con.taxcode))
             {
