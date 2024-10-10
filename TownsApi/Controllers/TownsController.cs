@@ -76,12 +76,21 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllProperties()
+        public async Task<IActionResult> GetAllProperties(int accountNum)
         {
+            List<property> users = new List<property>();
             try
             {
-                var users = await _context.property.ToListAsync();
+                if (accountNum != 0 || accountNum != null)
+                {
+                    users = await _context.property.Where(x => x.accountno == accountNum).ToListAsync();
 
+                }
+                else
+                {
+                    users = await _context.property.ToListAsync();
+
+                }
                 if (users.Count() <= 0)
                 {
 
@@ -1013,7 +1022,7 @@ namespace TownsApi.Controllers
                     StatusCode = StatusCodes.Status204NoContent,
                     token = null,
                     data = null,
-                    Message = ex.Message
+                    Message = ex.Message + ex?.StackTrace?.ToString()
                 };
                 return Ok(patResult);
             }
@@ -1031,11 +1040,17 @@ namespace TownsApi.Controllers
                 LookUPData lookUPData = new LookUPData();
 
                 var users = await _context.pricingManual.ToListAsync();
+                List<pricingManualP> usersP = new List<pricingManualP>();
+
                 users = users.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
+                List<propertyTypeP> propertyTypeP = new List<propertyTypeP>();
                 List<TaxCode> taxCodes = new List<TaxCode>();
                 List<Penalty> penalties = new List<Penalty>();
                 List<Status> statuses = new List<Status>();
+                var Deprec = await _context.Deprec.ToListAsync();
+                List<DeprecP> DeprecP = new List<DeprecP>();
+
                 taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACCT" });
                 taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADVR" });
                 taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMUZ" });
@@ -1057,14 +1072,34 @@ namespace TownsApi.Controllers
                 statuses.Add(new Status() { descript = "3", entrydescval = "Under Taxable", entryval = "U" });
 
 
+
+                foreach (var stat in propertyType)
+                {
+                    propertyTypeP.Add(new Models.propertyTypeP() { descript =stat.descript, entrydescval =stat.descript, exemption =stat.exemption, proptype =stat.proptype});
+                }
+
+
+                foreach (var stat in users)
+                {
+                    usersP.Add(new Models.pricingManualP() { descript = stat.descript, entrydescval = stat.descript,category=stat.category,PMYear=stat.PMYear,pricecode=stat.pricecode,unitcost=stat.unitcost });
+
+                }
+
+               
+                foreach (var stat in Deprec)
+                {
+                    DeprecP.Add(new Models.DeprecP() { entrydescval = stat.cond,cond=stat.cond, age= stat.age, Dpercent=stat.Dpercent  });
+
+                }
+
+
                 lookUPData.taxcode = taxCodes;
-                var Deprec = await _context.Deprec.ToListAsync();
-                lookUPData.propertyType = propertyType;
-                lookUPData.pricingManual = users;
+                lookUPData.propertyTypeP = propertyTypeP;
+                lookUPData.pricingManualP = usersP;
                 lookUPData.businesstype = businessTypes;
                 lookUPData.taxcode = taxCodes;
                 lookUPData.penalty = penalties;
-                lookUPData.Deprec = Deprec;
+                lookUPData.DeprecP = DeprecP;
                 lookUPData.status = statuses;
                 if (users.Count() <= 0)
                 {

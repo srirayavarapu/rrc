@@ -119,6 +119,17 @@ namespace TownsApi.Models
 
     }
 
+    public class pricingManualP
+    {
+        public short PMYear { get; set; }
+        public string pricecode { get; set; }
+        public string descript { get; set; }
+        public decimal unitcost { get; set; }
+        public string category { get; set; }
+        public string? entrydescval { get; set; }
+
+    }
+
     public class propertyType
     {
         [Key]
@@ -126,12 +137,29 @@ namespace TownsApi.Models
         public string descript { get; set; }
         public string exemption { get; set; }
     }
+    public class propertyTypeP
+    {
+       
+        public string proptype { get; set; }
+        public string descript { get; set; }
+        public string exemption { get; set; }
+        public string? entrydescval { get; set; }
+    }
     public class Deprec
     {
         [Key]
         public int age { get; set; }
         public string cond { get; set; }
         public decimal Dpercent { get; set; }
+    }
+
+    public class DeprecP
+    {
+        [Key]
+        public int age { get; set; }
+        public string cond { get; set; }
+        public decimal Dpercent { get; set; }
+        public string? entrydescval { get; set; }
     }
 
     public class TaxCode
@@ -161,9 +189,9 @@ namespace TownsApi.Models
     }
     public class LookUPData
     {
-        public List<pricingManual>? pricingManual { get; set; }
-        public List<propertyType>? propertyType { get; set; }
-        public List<Deprec> Deprec { get; set; }
+        public List<pricingManualP>? pricingManualP { get; set; }
+        public List<propertyTypeP>? propertyTypeP { get; set; }
+        public List<DeprecP> DeprecP { get; set; }
         public List<TaxCode> taxcode { get; set; }
         public List<BusinessType> businesstype { get; set; }
         public List<Penalty> penalty { get; set; }
