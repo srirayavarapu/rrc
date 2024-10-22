@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Azure;
+using System.ComponentModel.DataAnnotations;
 
 namespace TownsApi.Models
 {
@@ -139,7 +140,7 @@ namespace TownsApi.Models
     }
     public class propertyTypeP
     {
-       
+
         public string proptype { get; set; }
         public string descript { get; set; }
         public string exemption { get; set; }
@@ -257,5 +258,53 @@ namespace TownsApi.Models
         public List<Item> Items { get; set; }
     }
 
+    public class UsersData
+    {
+        [Key]
+        public int UserId { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public List<SurveyHeadersData> SurveyHeaders { get; set; }
+    }
 
+    public class SurveyHeadersData
+    {
+        [Key]
+        public int SurveyHeaderId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public int UserId { get; set; }
+        public UsersData User { get; set; }
+        public List<QuestionsData> Questions { get; set; }
+    }
+
+    public class QuestionsData
+    {
+        [Key]
+        public int QuestionId { get; set; }
+        public string Text { get; set; }
+        public QuestionType Type { get; set; }
+        public int SurveyHeaderId { get; set; }
+        public SurveyHeadersData SurveyHeader { get; set; }
+        public List<ResponsesData> Responses { get; set; }
+        public List<ChoicesData> Choices { get; set; }
+    }
+
+    public class ChoicesData
+    {
+        [Key]
+        public int ChoiceId { get; set; }
+        public string ChoiceText { get; set; }
+        public int QuestionId { get; set; }
+        public QuestionsData Question { get; set; }
+    }
+
+    public class ResponsesData
+    {
+        [Key]
+        public int ResponseId { get; set; }
+        public int QuestionId { get; set; }
+        public string Answer { get; set; }
+        public QuestionsData Question { get; set; }
+    }
 }

@@ -22,7 +22,55 @@ namespace TownsApi.Controllers
         {
             _context = context;
         }
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetAllSurveys()
+        {
+            try
+            {
+                var users = await _context.Survey.ToListAsync();
 
+                if (users.Count() <= 0)
+                {
+
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status401Unauthorized,
+                        token = null,
+                        Message = "No Survey exists",
+                        data = null
+                    };
+                    return Ok(patResult);
+                }
+
+
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = users
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
+                };
+                return Ok(patResult);
+            }
+
+        }
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -130,6 +178,20 @@ namespace TownsApi.Controllers
                 return Ok(patResult);
             }
 
+        }
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public IActionResult GetSurveyHeaders()
+        {
+            var surveyHeaders = _context.SurveyHeadersData.Include(sh => sh.Questions).ThenInclude(q => q.Choices).ToList();
+            return Ok(surveyHeaders);
+        }
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public IActionResult CreateSurveyHeader(SurveyHeadersData surveyHeader)
+        {
+            _context.SurveyHeadersData.Add(surveyHeader);
+            _context.SaveChanges();
+            return Ok(surveyHeader);
         }
 
         [HttpGet("/rrc/api/[controller]/[action]")]
@@ -567,8 +629,47 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddTaxPayer(TaxPayer con)
+        public async Task<IActionResult> AddTaxPayer(int isUpdate, TaxPayer con)
         {
+            try
+            {
+                if (isUpdate == 1)
+                {
+                    var taxPayerNumber = await _context.TaxPayer.Where(u => u.accountno == con.accountno).ToListAsync();
+                    _context.Update(taxPayerNumber[0]);
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                        ResultObject successResult = new ResultObject
+                        {
+                            Status = true,
+                            StatusCode = StatusCodes.Status200OK,
+                            token = null,
+                            data = taxPayerNumber[0],
+                            Message = "Updated successfully"
+                        };
+                        return Ok(successResult);
+
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        ResultObject patResult = new ResultObject
+                        {
+                            Status = false,
+                            StatusCode = StatusCodes.Status204NoContent,
+                            token = null,
+                            data = null,
+                            Message = ex.Message
+                        };
+                        return Ok(patResult);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
             List<TaxPayer> taxPayers = new List<TaxPayer>();
             Random random = new Random();
             if (con.accountno == 0 || con.accountno == null)
@@ -1075,20 +1176,20 @@ namespace TownsApi.Controllers
 
                 foreach (var stat in propertyType)
                 {
-                    propertyTypeP.Add(new Models.propertyTypeP() { descript =stat.descript, entrydescval =stat.descript, exemption =stat.exemption, proptype =stat.proptype});
+                    propertyTypeP.Add(new Models.propertyTypeP() { descript = stat.descript, entrydescval = stat.descript, exemption = stat.exemption, proptype = stat.proptype });
                 }
 
 
                 foreach (var stat in users)
                 {
-                    usersP.Add(new Models.pricingManualP() { descript = stat.descript, entrydescval = stat.descript,category=stat.category,PMYear=stat.PMYear,pricecode=stat.pricecode,unitcost=stat.unitcost });
+                    usersP.Add(new Models.pricingManualP() { descript = stat.descript, entrydescval = stat.descript, category = stat.category, PMYear = stat.PMYear, pricecode = stat.pricecode, unitcost = stat.unitcost });
 
                 }
 
-               
+
                 foreach (var stat in Deprec)
                 {
-                    DeprecP.Add(new Models.DeprecP() { entrydescval = stat.cond,cond=stat.cond, age= stat.age, Dpercent=stat.Dpercent  });
+                    DeprecP.Add(new Models.DeprecP() { entrydescval = stat.cond, cond = stat.cond, age = stat.age, Dpercent = stat.Dpercent });
 
                 }
 
@@ -1259,6 +1360,90 @@ namespace TownsApi.Controllers
                 return Ok(patResult);
             }
 
+        }
+
+
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UsersData>>> GetUsers()
+        {
+            return await _context.UsersData.ToListAsync();
+        }
+
+        // GET: api/users/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UsersData>> GetUser(int id)
+        {
+            var user = await _context.UsersData.FindAsync(id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
+        }
+
+        // POST: api/users
+        [HttpPost]
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<ActionResult<UsersData>> PostUser(UsersData user)
+        {
+            _context.UsersData.Add(user);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
+        }
+
+        // PUT: api/users/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutUser(int id, UsersData user)
+        {
+            if (id != user.UserId)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // DELETE: api/users/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var user = await _context.UsersData.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            _context.UsersData.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        private bool UserExists(int id)
+        {
+            return _context.UsersData.Any(e => e.UserId == id);
         }
 
     }
