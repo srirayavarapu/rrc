@@ -19,10 +19,6 @@
       "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\models\\question.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\models\\question.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\models\\survey.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\models\\survey.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -42,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 47,
+          "SelectedChildIndex": 46,
           "Children": [
             {
               "$type": "Bookmark",
@@ -214,7 +210,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 6,
               "Title": "QuestionType.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\QuestionType.cs",
               "RelativeDocumentMoniker": "TownsApi\\Models\\QuestionType.cs",
@@ -222,25 +218,11 @@
               "RelativeToolTip": "TownsApi\\Models\\QuestionType.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T09:45:13.331Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T09:45:13.331Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Question.cs",
-              "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\Question.cs",
-              "RelativeDocumentMoniker": "TownsApi\\Models\\Question.cs",
-              "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\Question.cs",
-              "RelativeToolTip": "TownsApi\\Models\\Question.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAADwvw4AAAAFAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T09:44:21.557Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
               "Title": "Survey.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\Survey.cs",
               "RelativeDocumentMoniker": "TownsApi\\Models\\Survey.cs",
@@ -248,8 +230,7 @@
               "RelativeToolTip": "TownsApi\\Models\\Survey.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAADwvw0AAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-21T09:43:30.403Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-21T09:43:30.403Z"
             },
             {
               "$type": "Document",
@@ -261,8 +242,7 @@
               "RelativeToolTip": "TownsApi\\Models\\Towns.cs",
               "ViewState": "AQIAABUBAAAAAAAAAAAawDQBAAAFAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T14:41:57.951Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T14:41:57.951Z"
             },
             {
               "$type": "Document",
@@ -274,8 +254,7 @@
               "RelativeToolTip": "TownsApi\\Data\\TownDBContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABUAAAAeAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T14:40:40.652Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T14:40:40.652Z"
             },
             {
               "$type": "Document",
@@ -285,14 +264,14 @@
               "RelativeDocumentMoniker": "TownsApi\\Controllers\\TownsController.cs",
               "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Controllers\\TownsController.cs",
               "RelativeToolTip": "TownsApi\\Controllers\\TownsController.cs",
-              "ViewState": "AQIAAMUAAAAAAAAAAAAawDoBAAARAAAA",
+              "ViewState": "AQIAAGcCAAAAAAAAAAAqwH4CAABAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-31T14:35:14.49Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 5,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\appsettings.json",
               "RelativeDocumentMoniker": "TownsApi\\appsettings.json",
@@ -300,8 +279,7 @@
               "RelativeToolTip": "TownsApi\\appsettings.json",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-08-31T07:08:56.578Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T07:08:56.578Z"
             },
             {
               "$type": "Document",
@@ -313,8 +291,7 @@
               "RelativeToolTip": "TownsApi\\Program.cs",
               "ViewState": "AQIAABYAAAAAAAAAAAAvwCEAAAABAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-31T07:07:31.306Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-31T07:07:31.306Z"
             }
           ]
         }

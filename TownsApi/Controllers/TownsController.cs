@@ -636,6 +636,75 @@ namespace TownsApi.Controllers
                 if (isUpdate == 1)
                 {
                     var taxPayerNumber = await _context.TaxPayer.Where(u => u.accountno == con.accountno).ToListAsync();
+                    taxPayerNumber[0].accountno = con.accountno;
+                    taxPayerNumber[0].Action = con.Action;
+                    taxPayerNumber[0].nbrhd = con.nbrhd;
+                    taxPayerNumber[0].owner = con.owner;
+                    taxPayerNumber[0].inputdate = con.inputdate;
+                    taxPayerNumber[0].locnum = con.locnum;
+                    taxPayerNumber[0].locsuffix = con.locsuffix;
+                    taxPayerNumber[0].locstreet = con.locstreet;
+                    taxPayerNumber[0].dba = con.dba;
+                    taxPayerNumber[0].mailaddr1 = con.mailaddr1;
+                    taxPayerNumber[0].mailaddr2 = con.mailaddr2;
+                    taxPayerNumber[0].mailcity = con.mailcity;
+                    taxPayerNumber[0].mailstate = con.mailstate;
+                    taxPayerNumber[0].mailzip = con.mailzip;
+                    taxPayerNumber[0].areacode = con.areacode;
+                    taxPayerNumber[0].phone = con.phone;
+                    taxPayerNumber[0].source = con.source;
+                    taxPayerNumber[0].taxcode = con.taxcode;
+                    taxPayerNumber[0].datalister = con.datalister;
+                    taxPayerNumber[0].entryclerk = con.entryclerk;
+                    taxPayerNumber[0].totalvalue = con.totalvalue;
+                    taxPayerNumber[0].oldtotal1 = con.oldtotal1;
+                    taxPayerNumber[0].oldtotal2 = con.oldtotal2;
+                    taxPayerNumber[0].oldtotal3 = con.oldtotal3;
+                    taxPayerNumber[0].listdate = con.listdate;
+                    taxPayerNumber[0].busntype = con.busntype;
+                    taxPayerNumber[0].user1 = con.user1;
+                    taxPayerNumber[0].user2 = con.user2;
+                    taxPayerNumber[0].user3 = con.user3;
+                    taxPayerNumber[0].user4 = con.user4;
+                    taxPayerNumber[0].lastinput = con.lastinput;
+                    taxPayerNumber[0].status = con.status;
+                    taxPayerNumber[0].growth = con.growth;
+                    taxPayerNumber[0].notes = con.notes;
+
+
+                    taxPayerNumber[0].penalty = con.penalty;
+                    taxPayerNumber[0].exemption = con.exemption;
+                    taxPayerNumber[0].emailid = con.emailid;
+                    taxPayerNumber[0].penaltyval = con.penaltyval;
+
+                    taxPayerNumber[0].penalty = con.penalty;
+                    taxPayerNumber[0].exemption = con.exemption;
+                    taxPayerNumber[0].emailid = con.emailid;
+                    taxPayerNumber[0].penaltyval = con.penaltyval;
+
+                    taxPayerNumber[0].netvalue = con.netvalue;
+                    taxPayerNumber[0].commno = con.commno;
+                    taxPayerNumber[0].iTotal = con.iTotal;
+                    taxPayerNumber[0].fTotal = con.fTotal;
+
+                    taxPayerNumber[0].pTotal = con.pTotal;
+                    taxPayerNumber[0].oTotal = con.oTotal;
+                    taxPayerNumber[0].mTotal = con.mTotal;
+
+                    taxPayerNumber[0].FOL = con.FOL;
+                    taxPayerNumber[0].WebAddress = con.WebAddress;
+
+
+                    taxPayerNumber[0].FId = con.FId;
+                    taxPayerNumber[0].EditUser = con.EditUser;
+                    taxPayerNumber[0].EditDate = con.EditDate;
+
+                    taxPayerNumber[0].EntryUser = con.EntryUser;
+                    taxPayerNumber[0].EntryDate = con.EntryDate;
+                    taxPayerNumber[0].Password = con.Password;
+                    taxPayerNumber[0].FOLEmail = con.FOLEmail;
+
+
                     _context.Update(taxPayerNumber[0]);
 
                     try
