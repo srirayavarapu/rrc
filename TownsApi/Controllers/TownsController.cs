@@ -815,7 +815,23 @@ namespace TownsApi.Controllers
             con.oldtotal2 = con.oldtotal2;
             con.oldtotal3 = con.oldtotal3;
             con.listdate = con.listdate;
-            con.busntype = con.busntype;
+            con.busntype = con.busntype?.TrimEnd();
+            if (con.user1 == null)
+            {
+                con.user1 = "";
+            }
+            if (con.user2 == null)
+            {
+                con.user2 = "";
+            }
+            if (con.user3 == null)
+            {
+                con.user3 = "";
+            }
+            if (con.user4 == null)
+            {
+                con.user4 = "";
+            }
             con.user1 = con.user1;
             con.user2 = con.user2;
             con.user3 = con.user3;
@@ -934,10 +950,10 @@ namespace TownsApi.Controllers
                 }
             }
 
-            if (!string.IsNullOrEmpty(con.busntype))
-            {
-                con.busntype = "ACC";
-            }
+            //if (!string.IsNullOrEmpty(con.busntype))
+            //{
+            //    con.busntype = "ACC";
+            //}
             if (!string.IsNullOrEmpty(con.busntype))
             {
                 if (con.busntype.Length > 4)
@@ -1133,10 +1149,7 @@ namespace TownsApi.Controllers
             {
                 con.taxcode = "301";
             }
-            if (!string.IsNullOrEmpty(con.taxcode))
-            {
-                con.taxcode = "301";
-            }
+
             if (!string.IsNullOrEmpty(con.taxcode))
             {
                 if (con.taxcode.Length > 3)
@@ -1221,9 +1234,9 @@ namespace TownsApi.Controllers
                 var Deprec = await _context.Deprec.ToListAsync();
                 List<DeprecP> DeprecP = new List<DeprecP>();
 
-                taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACCT" });
-                taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADVR" });
-                taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMUZ" });
+                taxCodes.Add(new TaxCode() { descript = "ACCOUNTING", entrydescval = "ACCT      -ACCOUNTING", entryval = "ACC" });
+                taxCodes.Add(new TaxCode() { descript = "ADVERTISING", entrydescval = "ADVR      -ADVERTISING", entryval = "ADV" });
+                taxCodes.Add(new TaxCode() { descript = "AMUSEMENT/ARCADE/PARK", entrydescval = "AMUZ      -AMUSEMENT/ARCADE/PARK", entryval = "AMU" });
 
                 List<BusinessType> businessTypes = new List<BusinessType>();
                 businessTypes.Add(new BusinessType() { descript = "2", entrydescval = "501 -INDIVIDUAL, PARTNERSHIP", entryval = "501" });
