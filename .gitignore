@@ -22,3 +22,7 @@ TownsApi/obj/Release/net8.0/refint/TownsApi.dll
 TownsApi/obj/Release/net8.0/TownsApi.AssemblyInfoInputs.cache
 TownsApi/obj/Release/net8.0/TownsApi.csproj.CoreCompileInputs.cache
 TownsApi/obj/Release/net8.0/TownsApi.sourcelink.json
+.vs/TownsApi/v17/.suo
+*.pdb
+TownsApi/obj/Release/net8.0/TownsApi.AssemblyInfoInputs.cache
+TownsApi/obj/Release/net8.0/TownsApi.sourcelink.json
