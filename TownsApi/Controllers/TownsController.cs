@@ -636,6 +636,30 @@ namespace TownsApi.Controllers
                 if (isUpdate == 1)
                 {
                     var taxPayerNumber = await _context.TaxPayer.Where(u => u.accountno == con.accountno).ToListAsync();
+                    if (con.user1 == null)
+                    {
+                        con.user1 = "";
+                    }
+                    if (con.user2 == null)
+                    {
+                        con.user2 = "";
+                    }
+                    if (con.user3 == null)
+                    {
+                        con.user3 = "";
+                    }
+                    if (con.user4 == null)
+                    {
+                        con.user4 = "";
+                    }
+                    if (!string.IsNullOrEmpty(con.Action))
+                    {
+                        con.Action = con.Action.TrimStart().TrimEnd();
+                    }
+                    if (!string.IsNullOrEmpty(con.FOL))
+                    {
+                        con.FOL = con.FOL.TrimStart().TrimEnd();
+                    }
                     taxPayerNumber[0].accountno = con.accountno;
                     taxPayerNumber[0].Action = con.Action;
                     taxPayerNumber[0].nbrhd = con.nbrhd;
@@ -672,6 +696,7 @@ namespace TownsApi.Controllers
                     taxPayerNumber[0].notes = con.notes;
 
 
+
                     taxPayerNumber[0].penalty = con.penalty;
                     taxPayerNumber[0].exemption = con.exemption;
                     taxPayerNumber[0].emailid = con.emailid;
@@ -704,6 +729,23 @@ namespace TownsApi.Controllers
                     taxPayerNumber[0].Password = con.Password;
                     taxPayerNumber[0].FOLEmail = con.FOLEmail;
 
+
+                    if (!string.IsNullOrEmpty(con.Action))
+                    {
+                        if (con.Action.Length > 2)
+                        {
+                            ResultObject patResult = new ResultObject
+                            {
+                                Status = false,
+                                StatusCode = StatusCodes.Status204NoContent,
+                                token = null,
+                                data = null,
+                                Message = "Action Must be 2 Characters"
+                            };
+                            return Ok(patResult);
+
+                        }
+                    }
 
                     _context.Update(taxPayerNumber[0]);
 
@@ -873,7 +915,7 @@ namespace TownsApi.Controllers
                 };
                 return Ok(patResult);
             }
-            if (!string.IsNullOrEmpty(con.Action))
+            if (string.IsNullOrEmpty(con.Action))
             {
                 con.Action = "Y";
             }
@@ -893,7 +935,7 @@ namespace TownsApi.Controllers
 
                 }
             }
-            if (!string.IsNullOrEmpty(con.FOL))
+            if (string.IsNullOrEmpty(con.FOL))
             {
                 con.FOL = "FO";
             }
@@ -929,7 +971,7 @@ namespace TownsApi.Controllers
 
                 }
             }
-            if (!string.IsNullOrEmpty(con.areacode))
+            if (string.IsNullOrEmpty(con.areacode))
             {
                 con.areacode = "301";
             }
@@ -970,7 +1012,7 @@ namespace TownsApi.Controllers
 
                 }
             }
-            if (!string.IsNullOrEmpty(con.datalister))
+            if (string.IsNullOrEmpty(con.datalister))
             {
                 con.datalister = "CY";
             }
@@ -1326,8 +1368,58 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddProperty(property con)
+        public async Task<IActionResult> AddProperty(int isUpdate, property con)
         {
+            try
+            {
+                if (isUpdate == 1)
+                {
+                    var taxPayerNumber = await _context?.property.Where(u => u.PropertyNo == con.PropertyNo).ToListAsync();
+                    taxPayerNumber[0].PropertyNo = con.PropertyNo;
+                    taxPayerNumber[0].deprecode = con.deprecode;
+                    taxPayerNumber[0].deptotal = con.deptotal;
+                    taxPayerNumber[0].descrption = con.descrption;
+                    taxPayerNumber[0].proptype = con.proptype;
+                    taxPayerNumber[0].status = con.status;
+                    taxPayerNumber[0].Acquired = con.Acquired;
+                    taxPayerNumber[0].replmtcost = con.replmtcost;
+                    taxPayerNumber[0].itemcost = con.itemcost;
+                    taxPayerNumber[0].EditDate = con.EditDate;
+                    taxPayerNumber[0].EditUser = con.EditUser;
+                    _context.Update(taxPayerNumber[0]);
+
+                    try
+                    {
+                        await _context.SaveChangesAsync();
+                        ResultObject successResult = new ResultObject
+                        {
+                            Status = true,
+                            StatusCode = StatusCodes.Status200OK,
+                            token = null,
+                            data = taxPayerNumber[0],
+                            Message = "Updated successfully"
+                        };
+                        return Ok(successResult);
+
+                    }
+                    catch (DbUpdateConcurrencyException ex)
+                    {
+                        ResultObject patResult = new ResultObject
+                        {
+                            Status = false,
+                            StatusCode = StatusCodes.Status204NoContent,
+                            token = null,
+                            data = null,
+                            Message = ex.Message
+                        };
+                        return Ok(patResult);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
             List<property> properties = new List<property>();
             if (!string.IsNullOrEmpty(con.deprecode))
             {
