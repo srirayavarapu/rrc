@@ -1265,6 +1265,7 @@ namespace TownsApi.Controllers
                 LookUPData lookUPData = new LookUPData();
 
                 var users = await _context.pricingManual.ToListAsync();
+                users = users.DistinctBy(x => x.unitcost).ToList();
                 List<pricingManualP> usersP = new List<pricingManualP>();
 
                 users = users.Take(100).ToList();
@@ -1315,6 +1316,10 @@ namespace TownsApi.Controllers
                 {
                     DeprecP.Add(new Models.DeprecP() { entrydescval = stat.cond, cond = stat.cond, age = stat.age, Dpercent = stat.Dpercent });
 
+                }
+                if(DeprecP?.Count>0)
+                {
+                    DeprecP=DeprecP.DistinctBy(x=>x.age).ToList();
                 }
 
 
