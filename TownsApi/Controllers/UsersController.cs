@@ -2,6 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using TownsApi.Data;
 using TownsApi.Models;
+using System.Linq;
+using System.Linq;
+using Dapper;
 
 namespace TownsApi.Controllers
 {
@@ -224,7 +227,21 @@ namespace TownsApi.Controllers
         {
             try
             {
+                string ConnectionString = "Server=tcp:rrcupdated.database.windows.net,1433;Initial Catalog=RRC_Town1;Persist Security Info=False;User ID=rrcadmin;Password=Happy@1234A;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=100;;";
+
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+                var outputList = connection.Query<QuestionsData>("SELECT * FROM QuestionsData").ToList();
+                var choices = connection.Query<ChoicesData>("SELECT * FROM ChoicesData").ToList();
                 var users = await _context.SurveyHeadersData.ToListAsync();
+               
+                foreach(var data in users)
+                {
+                   data.Questions=outputList.Where(x=>x.SurveyHeaderId==data.SurveyHeaderId).ToList();
+                }
+                foreach (var data in outputList)
+                {
+                    data.Choices = choices.Where(x => x.QuestionId == data.QuestionId).ToList();
+                }
 
                 if (users.Count() <= 0)
                 {

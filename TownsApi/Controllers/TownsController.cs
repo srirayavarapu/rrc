@@ -10,6 +10,7 @@ using TownsApi.Models;
 using static Azure.Core.HttpHeader;
 using Microsoft.IdentityModel.Tokens;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Microsoft.Data.SqlClient;
 
 namespace TownsApi.Controllers
 {
@@ -180,12 +181,12 @@ namespace TownsApi.Controllers
 
         }
 
-        [HttpGet("/rrc/api/[controller]/[action]")]
-        public IActionResult GetSurveyHeaders()
-        {
-            var surveyHeaders = _context.SurveyHeadersData.Include(sh => sh.Questions).ThenInclude(q => q.Choices).ToList();
-            return Ok(surveyHeaders);
-        }
+        //[HttpGet("/rrc/api/[controller]/[action]")]
+        //public IActionResult GetSurveyHeaders()
+        //{
+        //    var surveyHeaders = _context.SurveyHeadersData.Include(sh => sh.Questions).ThenInclude(q => q.Choices).ToList();
+        //    return Ok(surveyHeaders);
+        //}
         [HttpPost("/rrc/api/[controller]/[action]")]
         public IActionResult CreateSurveyHeader(SurveyHeadersData surveyHeader)
         {
@@ -303,6 +304,42 @@ namespace TownsApi.Controllers
 
         }
 
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdatepricingModel(string accountNo)
+        {
+            try
+            {
+                var result = _context.Database.ExecuteSqlRaw("EXEC STP_PropCalc @AccountNo, @mdepcalc",
+        new SqlParameter("@AccountNo", accountNo),
+        new SqlParameter("@mdepcalc", "1"));
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = result
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
+                };
+                return Ok(patResult);
+            }
+
+        }
 
         [HttpPut("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> UpdateTown(Towns con)
@@ -1317,9 +1354,9 @@ namespace TownsApi.Controllers
                     DeprecP.Add(new Models.DeprecP() { entrydescval = stat.cond, cond = stat.cond, age = stat.age, Dpercent = stat.Dpercent });
 
                 }
-                if(DeprecP?.Count>0)
+                if (DeprecP?.Count > 0)
                 {
-                    DeprecP=DeprecP.DistinctBy(x=>x.age).ToList();
+                    DeprecP = DeprecP.DistinctBy(x => x.age).ToList();
                 }
 
 
