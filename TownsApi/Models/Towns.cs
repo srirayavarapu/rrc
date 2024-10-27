@@ -52,21 +52,21 @@ namespace TownsApi.Models
     {
         [Key]
         public int? accountno { get; set; }
-        public string nbrhd { get; set; }
+        public string? nbrhd { get; set; }
         public string? owner { get; set; }
         public DateTime? inputdate { get; set; }
         public int? locnum { get; set; }
         public string? locsuffix { get; set; }
         public string? locstreet { get; set; }
-        public string dba { get; set; }
-        public string mailaddr1 { get; set; }
-        public string mailaddr2 { get; set; }
-        public string mailcity { get; set; }
-        public string mailstate { get; set; }
-        public string mailzip { get; set; }
+        public string? dba { get; set; }
+        public string? mailaddr1 { get; set; }
+        public string? mailaddr2 { get; set; }
+        public string? mailcity { get; set; }
+        public string? mailstate { get; set; }
+        public string? mailzip { get; set; }
         public string? areacode { get; set; }
-        public string phone { get; set; }
-        public string source { get; set; } = "";
+        public string? phone { get; set; }
+        public string? source { get; set; } = "";
         public string? taxcode { get; set; }
         public string? datalister { get; set; } = "";
         public string? entryclerk { get; set; } = "";
@@ -80,15 +80,15 @@ namespace TownsApi.Models
         public string? user2 { get; set; } = "";
         public string? user3 { get; set; } = "";
         public string? user4 { get; set; } = "";
-        public DateTime lastinput { get; set; }
-        public string status { get; set; }
+        public DateTime? lastinput { get; set; }
+        public string? status { get; set; }
         public decimal? growth { get; set; }
-        public string notes { get; set; }
+        public string? notes { get; set; }
         public string? penalty { get; set; }
-        public decimal exemption { get; set; }
-        public string emailid { get; set; }
-        public decimal penaltyval { get; set; }
-        public decimal netvalue { get; set; }
+        public decimal? exemption { get; set; }
+        public string? emailid { get; set; }
+        public decimal? penaltyval { get; set; }
+        public decimal? netvalue { get; set; }
         public string? commno { get; set; }
         public decimal? iTotal { get; set; }
         public decimal? fTotal { get; set; }
@@ -202,28 +202,28 @@ namespace TownsApi.Models
     public class property
     {
         [Key]
-        public int PropertyNo { get; set; }
-        public int accountno { get; set; }
-        public string proptype { get; set; }
-        public int quantity { get; set; }
-        public string deprecode { get; set; }
-        public decimal dpercent { get; set; }
-        public string pricecode { get; set; }
-        public string descrption { get; set; }
-        public decimal itemcost { get; set; }
-        public decimal replmtcost { get; set; }
-        public decimal deptotal { get; set; }
-        public int leasee { get; set; }
-        public short newyear { get; set; }
-        public short serviceyr { get; set; }
-        public string status { get; set; }
-        public decimal Exemption { get; set; }
+        public int? PropertyNo { get; set; }
+        public int? accountno { get; set; }
+        public string? proptype { get; set; }
+        public int? quantity { get; set; }
+        public string? deprecode { get; set; }
+        public decimal? dpercent { get; set; }
+        public string? pricecode { get; set; }
+        public string? descrption { get; set; }
+        public decimal? itemcost { get; set; }
+        public decimal? replmtcost { get; set; }
+        public decimal? deptotal { get; set; }
+        public int? leasee { get; set; }
+        public short? newyear { get; set; }
+        public short? serviceyr { get; set; }
+        public string? status { get; set; }
+        public decimal? Exemption { get; set; }
         //public byte[] RowVer { get; set; }
-        public string EntryUser { get; set; }
-        public DateTime EntryDate { get; set; }
-        public string EditUser { get; set; }
-        public DateTime EditDate { get; set; }
-        public DateTime Acquired { get; set; }
+        public string? EntryUser { get; set; }
+        public DateTime? EntryDate { get; set; }
+        public string? EditUser { get; set; }
+        public DateTime? EditDate { get; set; }
+        public DateTime? Acquired { get; set; }
 
     }
 

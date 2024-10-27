@@ -11,6 +11,8 @@ using static Azure.Core.HttpHeader;
 using Microsoft.IdentityModel.Tokens;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.Data.SqlClient;
+using Dapper;
+using Newtonsoft.Json;
 
 namespace TownsApi.Controllers
 {
@@ -19,9 +21,12 @@ namespace TownsApi.Controllers
     public class TownsController : Controller
     {
         private readonly TownDBContext _context;
-        public TownsController(TownDBContext context)
+        private readonly IConfiguration _configuration;
+
+        public TownsController(TownDBContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
@@ -127,20 +132,20 @@ namespace TownsApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllProperties(int accountNum)
         {
-            List<property> users = new List<property>();
+            List<property> properties = new List<property>();
             try
             {
                 if (accountNum != 0 || accountNum != null)
                 {
-                    users = await _context.property.Where(x => x.accountno == accountNum).ToListAsync();
+                    properties = await _context.property.Where(x => x.accountno == accountNum).ToListAsync();
 
                 }
                 else
                 {
-                    users = await _context.property.ToListAsync();
+                    properties = await _context.property.ToListAsync();
 
                 }
-                if (users.Count() <= 0)
+                if (properties.Count() <= 0)
                 {
 
                     ResultObject patResult = new ResultObject
@@ -161,7 +166,7 @@ namespace TownsApi.Controllers
                     StatusCode = StatusCodes.Status200OK,
                     token = null,
                     Message = "Data Found",
-                    data = users
+                    data = properties
                 };
                 return Ok(patResult1);
 
@@ -261,9 +266,32 @@ namespace TownsApi.Controllers
         {
             try
             {
-                var users = await _context.TaxPayer.ToListAsync();
+                var taxPayers = await _context.TaxPayer.ToListAsync();
+                taxPayers = taxPayers
+        .Select(e =>
+        {
+            if (e.user1 == null)
+            {
+                e.user1 = string.Empty;
+            }
+            if (e.user2 == null)
+            {
+                e.user2 = string.Empty;
+            }
+            if (e.user3 == null)
+            {
+                e.user3 = string.Empty;
+            }
+            if (e.user4 == null)
+            {
+                e.user4 = string.Empty;
+            }
 
-                if (users.Count() <= 0)
+            return e;
+        })
+        .ToList();
+
+                if (taxPayers.Count() <= 0)
                 {
 
                     ResultObject patResult = new ResultObject
@@ -284,7 +312,7 @@ namespace TownsApi.Controllers
                     StatusCode = StatusCodes.Status200OK,
                     token = null,
                     Message = "Data Found",
-                    data = users
+                    data = taxPayers
                 };
                 return Ok(patResult1);
 
@@ -315,6 +343,49 @@ namespace TownsApi.Controllers
                 var result = _context.Database.ExecuteSqlRaw("EXEC STP_PropCalc @AccountNo, @mdepcalc",
         new SqlParameter("@AccountNo", accountNo),
         new SqlParameter("@mdepcalc", "1"));
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = "Property and TaxPayer Tables Updated"
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
+                };
+                return Ok(patResult);
+            }
+
+        }
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> LeaseDetails(string accountNo)
+        {
+            try
+            {
+
+                string ConnectionString = new DataService(_configuration)._connectionString;
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+                var data = connection.Query<LeaseObject>("select leasee,* from property  where isnull(leasee,0)=" + accountNo + "").ToList();
+                string result = string.Empty;
+                if (data != null)
+                {
+                    result = JsonConvert.SerializeObject(data);
+                }
                 ResultObject patResult1 = new ResultObject
                 {
                     Status = true,
@@ -765,7 +836,31 @@ namespace TownsApi.Controllers
                     taxPayerNumber[0].EntryDate = con.EntryDate;
                     taxPayerNumber[0].Password = con.Password;
                     taxPayerNumber[0].FOLEmail = con.FOLEmail;
+                    if (string.IsNullOrEmpty(con.busntype))
+                    {
+                        ResultObject patResult = new ResultObject
+                        {
+                            Status = false,
+                            StatusCode = StatusCodes.Status204NoContent,
+                            token = null,
+                            data = null,
+                            Message = "Please Select Business Type "
+                        };
+                        return Ok(patResult);
+                    }
 
+                    if (string.IsNullOrEmpty(con.taxcode))
+                    {
+                        ResultObject patResult = new ResultObject
+                        {
+                            Status = false,
+                            StatusCode = StatusCodes.Status204NoContent,
+                            token = null,
+                            data = null,
+                            Message = "Please Select Tax Code "
+                        };
+                        return Ok(patResult);
+                    }
 
                     if (!string.IsNullOrEmpty(con.Action))
                     {

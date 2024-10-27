@@ -143,3 +143,4 @@ C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Debug\net8.0\TownsApi.pdb
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Debug\net8.0\TownsApi.genruntimeconfig.cache
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Debug\net8.0\ref\TownsApi.dll
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Debug\net8.0\Dapper.dll
+C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Debug\net8.0\Newtonsoft.Json.dll

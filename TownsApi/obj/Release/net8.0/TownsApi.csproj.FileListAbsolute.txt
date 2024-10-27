@@ -8,6 +8,7 @@ C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\TownsApi.dll
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\TownsApi.pdb
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Azure.Core.dll
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Azure.Identity.dll
+C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Dapper.dll
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Microsoft.Data.SqlClient.dll
@@ -71,4 +72,3 @@ C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Release\net8.0\refint\TownsApi.
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Release\net8.0\TownsApi.pdb
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Release\net8.0\TownsApi.genruntimeconfig.cache
 C:\Users\srira\Documents\GitHub\rrc\TownsApi\obj\Release\net8.0\ref\TownsApi.dll
-C:\Users\srira\Documents\GitHub\rrc\TownsApi\bin\Release\net8.0\Dapper.dll
