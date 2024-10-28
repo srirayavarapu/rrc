@@ -2,21 +2,21 @@
 {
     public class LeaseObject
     {
-        public int? leasee;
-        public int? accountno;
-        public string? proptype;
-        public int? quantity;
-        public string? deprecode;
-        public string? dpercent;
-        public string? pricecode;
-        public string? descrption;
-        public string? itemcost;
-        public string? replmtcost;
-        public string? deptotal; 
+        public int? leasee { get; set; }
+        public int? accountno { get; set; }
+        public string? proptype { get; set; }
+        public int? quantity { get; set; }
+        public string? deprecode { get; set; }
+        public string? dpercent { get; set; }
+        public string? pricecode { get; set; }
+        public string? descrption { get; set; }
+        public string? itemcost { get; set; }
+        public string? replmtcost { get; set; }
+        public string? deptotal { get; set; }
         //public string? lease;
-        public string? newyear; 
-        public string? serviceyr;
-        public string? status;
+        public string? newyear { get; set; }
+        public string? serviceyr { get; set; }
+        public string? status { get; set; }
         //public string? Exemption;
         //public string? PropertyNo;
         //public string? EntryUser;

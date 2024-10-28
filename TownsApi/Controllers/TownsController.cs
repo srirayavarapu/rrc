@@ -12,7 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using Microsoft.Data.SqlClient;
 using Dapper;
-using Newtonsoft.Json;
+using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace TownsApi.Controllers
 {
@@ -370,20 +371,44 @@ namespace TownsApi.Controllers
                 string ConnectionString = new DataService(_configuration)._connectionString;
                 var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
                 var data = connection.Query<LeaseObject>("select leasee,* from property  where isnull(leasee,0)=" + accountNo + "").ToList();
-                string result = string.Empty;
-                if (data != null)
+                if (data.Count > 0)
                 {
-                    result = JsonConvert.SerializeObject(data);
+
+                    List<LeaseObject> leaseObjects = new List<LeaseObject>();
+                    foreach (var leaseObject in data)
+                    {
+                        leaseObjects.Add(leaseObject);
+                    }
+
+                    var strJson = JsonSerializer.Serialize(leaseObjects);
+                    List<LeaseObject> LeaseObjects = JsonSerializer.Deserialize<List<LeaseObject>>(strJson);
+
+                    string result = string.Empty;
+                    var updatedJsonString = JsonSerializer.Serialize(LeaseObjects);
+
+
+                    ResultObject patResult1 = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status200OK,
+                        token = null,
+                        Message = "Data Found",
+                        data = LeaseObjects
+                    };
+                    return Ok(patResult1);
                 }
-                ResultObject patResult1 = new ResultObject
+                else
                 {
-                    Status = true,
-                    StatusCode = StatusCodes.Status200OK,
-                    token = null,
-                    Message = "Data Found",
-                    data = result
-                };
-                return Ok(patResult1);
+                    ResultObject patResult1 = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status204NoContent,
+                        token = null,
+                        Message = "No Data Found",
+                        data = ""
+                    };
+                    return Ok(patResult1);
+                }
 
             }
             catch (Exception ex)
@@ -402,85 +427,85 @@ namespace TownsApi.Controllers
         }
 
 
-        [HttpGet("/rrc/api/[controller]/[action]")]
-        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetMenuandSubMenu()
-        {
-            try
-            {
-                string ConnectionString = new DataService(_configuration)._connectionString;
-                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
-                connection.Open();
-                var products = await _context.OP_Security_Points.FromSqlRaw("SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'")
-        .ToListAsync();
+        //[HttpGet("/rrc/api/[controller]/[action]")]
+        //[ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> GetMenuandSubMenu()
+        //{
+        //    try
+        //    {
+        //        string ConnectionString = new DataService(_configuration)._connectionString;
+        //        var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+        //        connection.Open();
+        //        var products = await _context.OP_Security_Points.FromSqlRaw("SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'")
+        //.ToListAsync();
        
    
-                //using (var command = connection.CreateCommand())
-                //{
-                //    command.CommandText = "SP_OP_UserRights";
-                //    var nusernameParameter = new SqlParameter("@nusername", "cd");
-                //    var pwdParameter = new SqlParameter("@pwd", "WINTHROP");
-                //    var ipParameter = new SqlParameter("@ip", "50.203.98.226");
-                //    command.Parameters.Add(nusernameParameter);
-                //    command.Parameters.Add(pwdParameter);
-                //    command.Parameters.Add(ipParameter);
-                //    command.CommandType = System.Data.CommandType.StoredProcedure;
+        //        //using (var command = connection.CreateCommand())
+        //        //{
+        //        //    command.CommandText = "SP_OP_UserRights";
+        //        //    var nusernameParameter = new SqlParameter("@nusername", "cd");
+        //        //    var pwdParameter = new SqlParameter("@pwd", "WINTHROP");
+        //        //    var ipParameter = new SqlParameter("@ip", "50.203.98.226");
+        //        //    command.Parameters.Add(nusernameParameter);
+        //        //    command.Parameters.Add(pwdParameter);
+        //        //    command.Parameters.Add(ipParameter);
+        //        //    command.CommandType = System.Data.CommandType.StoredProcedure;
 
-                //    using (var reader = command.ExecuteReader())
-                //    {
-                //        // Read Products
-                //        var products = new List<SecDetails>();
-                //        while (reader.Read())
-                //        {
-                //            var product = new SecDetails
-                //            {
+        //        //    using (var reader = command.ExecuteReader())
+        //        //    {
+        //        //        // Read Products
+        //        //        var products = new List<SecDetails>();
+        //        //        while (reader.Read())
+        //        //        {
+        //        //            var product = new SecDetails
+        //        //            {
 
-                //                UserModule = reader.GetString(1), // Assuming Name is the second column
+        //        //                UserModule = reader.GetString(1), // Assuming Name is the second column
 
-                //            };
-                //            products.Add(product);
-                //        }
+        //        //            };
+        //        //            products.Add(product);
+        //        //        }
 
-                //        reader.NextResult(); // Move to the next result set
-
-
-                //    }
-                //}
+        //        //        reader.NextResult(); // Move to the next result set
 
 
+        //        //    }
+        //        //}
 
-                var data = connection.Query<SecDetails>("EXEC  SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'").ToList();
-                string result = string.Empty;
-                if (data != null)
-                {
-                    result = JsonConvert.SerializeObject(data);
-                }
-                ResultObject patResult1 = new ResultObject
-                {
-                    Status = true,
-                    StatusCode = StatusCodes.Status200OK,
-                    token = null,
-                    Message = "Data Found",
-                    data = result
-                };
-                return Ok(patResult1);
 
-            }
-            catch (Exception ex)
-            {
-                ResultObject patResult = new ResultObject
-                {
-                    Status = true,
-                    StatusCode = StatusCodes.Status422UnprocessableEntity,
-                    token = null,
-                    Message = ex.StackTrace,
-                    data = null
-                };
-                return Ok(patResult);
-            }
 
-        }
+        //        var data = connection.Query<SecDetails>("EXEC  SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'").ToList();
+        //        string result = string.Empty;
+        //        if (data != null)
+        //        {
+        //            result = JsonConvert.SerializeObject(data);
+        //        }
+        //        ResultObject patResult1 = new ResultObject
+        //        {
+        //            Status = true,
+        //            StatusCode = StatusCodes.Status200OK,
+        //            token = null,
+        //            Message = "Data Found",
+        //            data = result
+        //        };
+        //        return Ok(patResult1);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ResultObject patResult = new ResultObject
+        //        {
+        //            Status = true,
+        //            StatusCode = StatusCodes.Status422UnprocessableEntity,
+        //            token = null,
+        //            Message = ex.StackTrace,
+        //            data = null
+        //        };
+        //        return Ok(patResult);
+        //    }
+
+        //}
 
         [HttpPut("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> UpdateTown(Towns con)
