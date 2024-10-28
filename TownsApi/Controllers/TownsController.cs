@@ -186,19 +186,8 @@ namespace TownsApi.Controllers
 
         }
 
-        //[HttpGet("/rrc/api/[controller]/[action]")]
-        //public IActionResult GetSurveyHeaders()
-        //{
-        //    var surveyHeaders = _context.SurveyHeadersData.Include(sh => sh.Questions).ThenInclude(q => q.Choices).ToList();
-        //    return Ok(surveyHeaders);
-        //}
-        [HttpPost("/rrc/api/[controller]/[action]")]
-        public IActionResult CreateSurveyHeader(SurveyHeadersData surveyHeader)
-        {
-            _context.SurveyHeadersData.Add(surveyHeader);
-            _context.SaveChanges();
-            return Ok(surveyHeader);
-        }
+        
+      
 
         [HttpGet("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> GetTownDetails(int id)
@@ -381,6 +370,87 @@ namespace TownsApi.Controllers
                 string ConnectionString = new DataService(_configuration)._connectionString;
                 var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
                 var data = connection.Query<LeaseObject>("select leasee,* from property  where isnull(leasee,0)=" + accountNo + "").ToList();
+                string result = string.Empty;
+                if (data != null)
+                {
+                    result = JsonConvert.SerializeObject(data);
+                }
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = result
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
+                };
+                return Ok(patResult);
+            }
+
+        }
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetMenuandSubMenu()
+        {
+            try
+            {
+                string ConnectionString = new DataService(_configuration)._connectionString;
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+                connection.Open();
+                var products = await _context.OP_Security_Points.FromSqlRaw("SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'")
+        .ToListAsync();
+       
+   
+                //using (var command = connection.CreateCommand())
+                //{
+                //    command.CommandText = "SP_OP_UserRights";
+                //    var nusernameParameter = new SqlParameter("@nusername", "cd");
+                //    var pwdParameter = new SqlParameter("@pwd", "WINTHROP");
+                //    var ipParameter = new SqlParameter("@ip", "50.203.98.226");
+                //    command.Parameters.Add(nusernameParameter);
+                //    command.Parameters.Add(pwdParameter);
+                //    command.Parameters.Add(ipParameter);
+                //    command.CommandType = System.Data.CommandType.StoredProcedure;
+
+                //    using (var reader = command.ExecuteReader())
+                //    {
+                //        // Read Products
+                //        var products = new List<SecDetails>();
+                //        while (reader.Read())
+                //        {
+                //            var product = new SecDetails
+                //            {
+
+                //                UserModule = reader.GetString(1), // Assuming Name is the second column
+
+                //            };
+                //            products.Add(product);
+                //        }
+
+                //        reader.NextResult(); // Move to the next result set
+
+
+                //    }
+                //}
+
+
+
+                var data = connection.Query<SecDetails>("EXEC  SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'").ToList();
                 string result = string.Empty;
                 if (data != null)
                 {
@@ -1671,90 +1741,6 @@ namespace TownsApi.Controllers
                 return Ok(patResult);
             }
 
-        }
-
-
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UsersData>>> GetUsers()
-        {
-            return await _context.UsersData.ToListAsync();
-        }
-
-        // GET: api/users/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UsersData>> GetUser(int id)
-        {
-            var user = await _context.UsersData.FindAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return user;
-        }
-
-        // POST: api/users
-        [HttpPost]
-        [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<ActionResult<UsersData>> PostUser(UsersData user)
-        {
-            _context.UsersData.Add(user);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
-        }
-
-        // PUT: api/users/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, UsersData user)
-        {
-            if (id != user.UserId)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(user).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // DELETE: api/users/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUser(int id)
-        {
-            var user = await _context.UsersData.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            _context.UsersData.Remove(user);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.UsersData.Any(e => e.UserId == id);
         }
 
     }

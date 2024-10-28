@@ -1,5 +1,6 @@
 ﻿using Azure;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace TownsApi.Models
 {
@@ -138,6 +139,39 @@ namespace TownsApi.Models
         public string descript { get; set; }
         public string exemption { get; set; }
     }
+
+    public class OP_Security_Points
+    {
+        [Key]
+        public string? SecurityID { get; set; }
+        public string? UserModule { get; set; }
+        public string? Description { get; set; }
+        public bool? UserAdd { get; set; }
+        public bool? UserDelete { get; set; }
+        public bool? UserEdit { get; set; }
+        public bool? UserSearch { get; set; }
+        public bool? AddToolBar { get; set; }
+        public string? FileName { get; set; }
+        public string? ToolBarImagePath { get; set; }
+        public string? Tooltip { get; set; }
+        public int? Toolbarorder { get; set; }
+        public string? ToolButtonText { get; set; }
+        public string? Submodule { get; set; }
+        public string? Module { get; set; }
+        public string? MailMergeDocumentList { get; set; }
+        public string? GridViewColumns { get; set; }
+        public string? SQLSelect { get; set; }
+        public string? SQLWhere { get; set; }
+        public string? SQLOrderBy { get; set; }
+        public string? ReportOrderBy { get; set; }
+        public string? SecType { get; set; }
+        public string? MenuShortCutKeys { get; set; }
+        public string? ReportParams { get; set; }
+        public bool? disabled { get; set; }
+        public string? WebFileName { get; set; }
+        public string? SecID { get; set; }
+    }
+    
     public class propertyTypeP
     {
 
@@ -258,53 +292,53 @@ namespace TownsApi.Models
         public List<Item> Items { get; set; }
     }
 
-    public class UsersData
-    {
-        [Key]
-        public int UserId { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public List<SurveyHeadersData> SurveyHeaders { get; set; }
-    }
+    //public class UsersData
+    //{
+    //    [Key]
+    //    public int UserId { get; set; }
+    //    public string Username { get; set; }
+    //    public string Password { get; set; }
+    //    public List<SurveyHeadersData> SurveyHeaders { get; set; }
+    //}
 
-    public class SurveyHeadersData
-    {
-        [Key]
-        public int SurveyHeaderId { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public int UserId { get; set; }
-        public UsersData User { get; set; }
-        public List<QuestionsData> Questions { get; set; }
-    }
+    //public class SurveyHeadersData
+    //{
+    //    [Key]
+    //    public int SurveyHeaderId { get; set; }
+    //    public string Title { get; set; }
+    //    public string Description { get; set; }
+    //    public int UserId { get; set; }
+    //    public UsersData User { get; set; }
+    //    public List<QuestionsData> Questions { get; set; }
+    //}
 
-    public class QuestionsData
-    {
-        [Key]
-        public int QuestionId { get; set; }
-        public string Text { get; set; }
-        public QuestionType Type { get; set; }
-        public int SurveyHeaderId { get; set; }
-        public SurveyHeadersData SurveyHeader { get; set; }
-        public List<ResponsesData> Responses { get; set; }
-        public List<ChoicesData> Choices { get; set; }
-    }
+    //public class QuestionsData
+    //{
+    //    [Key]
+    //    public int QuestionId { get; set; }
+    //    public string Text { get; set; }
+    //    public QuestionType Type { get; set; }
+    //    public int SurveyHeaderId { get; set; }
+    //    public SurveyHeadersData SurveyHeader { get; set; }
+    //    public List<ResponsesData> Responses { get; set; }
+    //    public List<ChoicesData> Choices { get; set; }
+    //}
 
-    public class ChoicesData
-    {
-        [Key]
-        public int ChoiceId { get; set; }
-        public string ChoiceText { get; set; }
-        public int QuestionId { get; set; }
-        public QuestionsData Question { get; set; }
-    }
+    //public class ChoicesData
+    //{
+    //    [Key]
+    //    public int ChoiceId { get; set; }
+    //    public string ChoiceText { get; set; }
+    //    public int QuestionId { get; set; }
+    //    public QuestionsData Question { get; set; }
+    //}
 
-    public class ResponsesData
-    {
-        [Key]
-        public int ResponseId { get; set; }
-        public int QuestionId { get; set; }
-        public string Answer { get; set; }
-        public QuestionsData Question { get; set; }
-    }
+    //public class ResponsesData
+    //{
+    //    [Key]
+    //    public int ResponseId { get; set; }
+    //    public int QuestionId { get; set; }
+    //    public string Answer { get; set; }
+    //    public QuestionsData Question { get; set; }
+    //}
 }

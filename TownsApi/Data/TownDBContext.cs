@@ -19,10 +19,11 @@ namespace TownsApi.Data
         public DbSet<Models.Question>? Question { get; set; }
 
 
-        public DbSet<UsersData> UsersData { get; set; }
-        public DbSet<SurveyHeadersData> SurveyHeadersData { get; set; }
-        public DbSet<QuestionsData> QuestionsData { get; set; }
-        public DbSet<ResponsesData> ResponsesData { get; set; }
-        public DbSet<ChoicesData> ChoicesData { get; set; }
+        //public DbSet<UsersData> UsersData { get; set; }
+        //public DbSet<SurveyHeadersData> SurveyHeadersData { get; set; }
+        //public DbSet<QuestionsData> QuestionsData { get; set; }
+        //public DbSet<ResponsesData> ResponsesData { get; set; }
+        //public DbSet<ChoicesData> ChoicesData { get; set; }
+        public DbSet<OP_Security_Points> OP_Security_Points { get; set; }
     }
 }
