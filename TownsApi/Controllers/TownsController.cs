@@ -85,9 +85,11 @@ namespace TownsApi.Controllers
         {
             try
             {
-                var users = await _context.Towns.ToListAsync();
+                var ConnectionString = "Server=40.114.33.101;Initial Catalog=RRC;Persist Security Info=False;User ID=srikanth;Password=Sri@vedas#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=100;";
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+                var data = connection.Query<Towns>("Select * from Towns").ToList();
 
-                if (users.Count() <= 0)
+                if (data.Count() <= 0)
                 {
 
                     ResultObject patResult = new ResultObject
@@ -108,7 +110,7 @@ namespace TownsApi.Controllers
                     StatusCode = StatusCodes.Status200OK,
                     token = null,
                     Message = "Data Found",
-                    data = users
+                    data = data
                 };
                 return Ok(patResult1);
 
