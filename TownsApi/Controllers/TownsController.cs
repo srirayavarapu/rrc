@@ -258,14 +258,14 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllTaxPayers(string townname = "")
+        public async Task<IActionResult> GetAllTaxPayers(string townId = "")
         {
             try
             {
                 string dbame = string.Empty;
-                if (!string.IsNullOrEmpty(townname))
+                if (!string.IsNullOrEmpty(townId))
                 {
-                    dbame = "RRC_" + townname.TrimStart().TrimEnd();
+                    dbame = "RRC_" + townId.TrimStart().TrimEnd();
                 }
                 else
                 {
@@ -344,10 +344,22 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdatepricingModel(string accountNo)
+        public async Task<IActionResult> UpdatepricingModel(string accountNo, string townId = "")
         {
             try
             {
+                string dbame = string.Empty;
+                if (!string.IsNullOrEmpty(townId))
+                {
+                    dbame = "RRC_" + townId.TrimStart().TrimEnd();
+                }
+                else
+                {
+                    dbame = "RRC_Agawam";
+                }
+                var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+
+                _context = DbContextFactory.Create(connectionString);
                 var result = _context.Database.ExecuteSqlRaw("EXEC STP_PropCalc @AccountNo, @mdepcalc",
         new SqlParameter("@AccountNo", accountNo),
         new SqlParameter("@mdepcalc", "1"));
@@ -381,7 +393,7 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> LeaseDetails(string accountNo,string townId="")
+        public async Task<IActionResult> LeaseDetails(string accountNo, string townId = "")
         {
             string dbame = string.Empty;
             if (!string.IsNullOrEmpty(townId))
@@ -706,22 +718,14 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddTown(Towns con, string townId = "")
+        public async Task<IActionResult> AddTown(Towns con)
         {
             string dbame = string.Empty;
-            if (!string.IsNullOrEmpty(townId))
-            {
-                dbame = "RRC_" + townId.TrimStart().TrimEnd();
-            }
-            else
-            {
-                dbame = "RRC_Agawam";
-            }
+            dbame = "RRC";
             var connectionString = _connectionStringProvider.GetConnectionString(dbame);
 
             _context = DbContextFactory.Create(connectionString);
 
-            _context = DbContextFactory.Create(connectionString);
             if (!string.IsNullOrEmpty(con.TownName))
             {
                 con.TownName = con.TownName;
@@ -1538,9 +1542,27 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetLookUPValues(string townId="")
+        public async Task<IActionResult> GetLookUPValues(string townId = "")
         {
+            List<pricingManual> manuals = new List<pricingManual>();
             string dbame = string.Empty;
+            try
+            {
+
+
+                dbame = "RRC";
+
+
+                var connectionStringRoot = _connectionStringProvider.GetConnectionString(dbame);
+
+                _context = DbContextFactory.Create(connectionStringRoot);
+                manuals = await _context.pricingManual.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                ex.Message.ToString();
+            }
+
             if (!string.IsNullOrEmpty(townId))
             {
                 dbame = "RRC_" + townId.TrimStart().TrimEnd();
@@ -1552,15 +1574,17 @@ namespace TownsApi.Controllers
             var connectionString = _connectionStringProvider.GetConnectionString(dbame);
 
             _context = DbContextFactory.Create(connectionString);
+
+
             try
             {
                 LookUPData lookUPData = new LookUPData();
 
-                var users = await _context.pricingManual.ToListAsync();
-                users = users.DistinctBy(x => x.unitcost).ToList();
+
+                // manuals = manuals.DistinctBy(x => x.unitcost).ToList();
                 List<pricingManualP> usersP = new List<pricingManualP>();
 
-                users = users.Take(100).ToList();
+                // manuals = manuals.Take(100).ToList();
                 var propertyType = await _context.propertyType.ToListAsync();
                 List<propertyTypeP> propertyTypeP = new List<propertyTypeP>();
                 List<TaxCode> taxCodes = new List<TaxCode>();
@@ -1597,7 +1621,7 @@ namespace TownsApi.Controllers
                 }
 
 
-                foreach (var stat in users)
+                foreach (var stat in manuals)
                 {
                     usersP.Add(new Models.pricingManualP() { descript = stat.descript, entrydescval = stat.descript, category = stat.category, PMYear = stat.PMYear, pricecode = stat.pricecode, unitcost = stat.unitcost });
 
@@ -1623,7 +1647,7 @@ namespace TownsApi.Controllers
                 lookUPData.penalty = penalties;
                 lookUPData.DeprecP = DeprecP;
                 lookUPData.status = statuses;
-                if (users.Count() <= 0)
+                if (manuals.Count() <= 0)
                 {
 
                     ResultObject patResult = new ResultObject

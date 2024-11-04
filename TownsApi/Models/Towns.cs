@@ -135,9 +135,9 @@ namespace TownsApi.Models
     public class propertyType
     {
         [Key]
-        public string proptype { get; set; }
-        public string descript { get; set; }
-        public string exemption { get; set; }
+        public string? proptype { get; set; }
+        public string? descript { get; set; }
+        public string? exemption { get; set; }
     }
 
     public class OP_Security_Points
