@@ -7,16 +7,20 @@
       "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\controllers\\townscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\connectionstringprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\connectionstringprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\dbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\dbcontextfactory.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\connectionstringprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\connectionstringprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\iconnectionstringprovider.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -49,10 +53,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\dataservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\dataservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|c:\\users\\srira\\documents\\github\\rrc\\townsapi\\models\\secdetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DF83EF81-B311-4DEF-8F35-59B5CBFF410E}|TownsApi\\TownsApi.csproj|solutionrelative:townsapi\\models\\secdetails.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,7 +66,7 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "Towns.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\Towns.cs",
               "RelativeDocumentMoniker": "TownsApi\\Models\\Towns.cs",
@@ -80,7 +80,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "LeaseObject.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\LeaseObject.cs",
               "RelativeDocumentMoniker": "TownsApi\\Models\\LeaseObject.cs",
@@ -89,6 +89,20 @@
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAAcAAAAcAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-10-27T13:15:31.651Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "c.json",
+              "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\c.json",
+              "RelativeDocumentMoniker": "TownsApi\\c.json",
+              "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\c.json",
+              "RelativeToolTip": "TownsApi\\c.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-11-04T01:46:43.742Z",
               "IsPinned": true,
               "EditorCaption": ""
             },
@@ -262,20 +276,20 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "c.json",
-              "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\c.json",
-              "RelativeDocumentMoniker": "TownsApi\\c.json",
-              "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\c.json",
-              "RelativeToolTip": "TownsApi\\c.json",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-11-04T01:46:43.742Z",
+              "DocumentIndex": 2,
+              "Title": "DbContextFactory.cs",
+              "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\DbContextFactory.cs",
+              "RelativeDocumentMoniker": "TownsApi\\DbContextFactory.cs",
+              "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\DbContextFactory.cs",
+              "RelativeToolTip": "TownsApi\\DbContextFactory.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAADwvw8AAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-04T04:39:01.146Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 1,
               "Title": "ConnectionStringProvider.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\ConnectionStringProvider.cs",
               "RelativeDocumentMoniker": "TownsApi\\ConnectionStringProvider.cs",
@@ -288,7 +302,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "IConnectionStringProvider.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\IConnectionStringProvider.cs",
               "RelativeDocumentMoniker": "TownsApi\\IConnectionStringProvider.cs",
@@ -302,19 +316,6 @@
             {
               "$type": "Document",
               "DocumentIndex": 12,
-              "Title": "SecDetails.cs",
-              "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\SecDetails.cs",
-              "RelativeDocumentMoniker": "TownsApi\\Models\\SecDetails.cs",
-              "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\SecDetails.cs",
-              "RelativeToolTip": "TownsApi\\Models\\SecDetails.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAfAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-10-27T14:58:51.529Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
               "Title": "DataService.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\DataService.cs",
               "RelativeDocumentMoniker": "TownsApi\\DataService.cs",
@@ -327,7 +328,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "QuestionType.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\QuestionType.cs",
               "RelativeDocumentMoniker": "TownsApi\\Models\\QuestionType.cs",
@@ -340,7 +341,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "Survey.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Models\\Survey.cs",
               "RelativeDocumentMoniker": "TownsApi\\Models\\Survey.cs",
@@ -353,7 +354,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "TownDBContext.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Data\\TownDBContext.cs",
               "RelativeDocumentMoniker": "TownsApi\\Data\\TownDBContext.cs",
@@ -372,14 +373,14 @@
               "RelativeDocumentMoniker": "TownsApi\\Controllers\\TownsController.cs",
               "ToolTip": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Controllers\\TownsController.cs",
               "RelativeToolTip": "TownsApi\\Controllers\\TownsController.cs",
-              "ViewState": "AQIAAB0BAAAAAAAAAAAAACsBAAApAAAA",
+              "ViewState": "AQIAAFYGAAAAAAAAAAAAAGwGAABiAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2024-08-31T14:35:14.49Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "appsettings.json",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\appsettings.json",
               "RelativeDocumentMoniker": "TownsApi\\appsettings.json",
@@ -392,7 +393,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\srira\\Documents\\GitHub\\rrc\\TownsApi\\Program.cs",
               "RelativeDocumentMoniker": "TownsApi\\Program.cs",

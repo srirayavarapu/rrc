@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using System.Text.Json;
 using TownsApi.Data;
 using TownsApi.Models;
@@ -12,11 +13,11 @@ namespace TownsApi.Controllers
     [ApiController]
     public class TownsController : Controller
     {
-        private readonly TownDBContext _context;
+        private TownDBContext _context;
         private readonly IConfiguration _configuration;
         private readonly IConnectionStringProvider _connectionStringProvider;
 
-        public TownsController(TownDBContext context,IConnectionStringProvider connectionStringProvider)
+        public TownsController(TownDBContext context, IConnectionStringProvider connectionStringProvider)
         {
             _context = context;
             _connectionStringProvider = connectionStringProvider;
@@ -124,8 +125,20 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllProperties(int accountNum)
+        public async Task<IActionResult> GetAllProperties(int accountNum, string townId = "")
         {
+            string dbame = string.Empty;
+            if (!string.IsNullOrEmpty(townId))
+            {
+                dbame = "RRC_" + townId.TrimStart().TrimEnd();
+            }
+            else
+            {
+                dbame = "RRC_Agawam";
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+
+            _context = DbContextFactory.Create(connectionString);
             List<property> properties = new List<property>();
             try
             {
@@ -368,13 +381,24 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> LeaseDetails(string accountNo)
+        public async Task<IActionResult> LeaseDetails(string accountNo,string townId="")
         {
+            string dbame = string.Empty;
+            if (!string.IsNullOrEmpty(townId))
+            {
+                dbame = "RRC_" + townId.TrimStart().TrimEnd();
+            }
+            else
+            {
+                dbame = "RRC_Agawam";
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+
+            _context = DbContextFactory.Create(connectionString);
             try
             {
 
-                string ConnectionString = new DataService(_configuration)._connectionString;
-                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
                 var data = connection.Query<LeaseObject>("select leasee,* from property  where isnull(leasee,0)=" + accountNo + "").ToList();
                 if (data.Count > 0)
                 {
@@ -682,10 +706,22 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddTown(Towns con)
+        public async Task<IActionResult> AddTown(Towns con, string townId = "")
         {
+            string dbame = string.Empty;
+            if (!string.IsNullOrEmpty(townId))
+            {
+                dbame = "RRC_" + townId.TrimStart().TrimEnd();
+            }
+            else
+            {
+                dbame = "RRC_Agawam";
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString(dbame);
 
+            _context = DbContextFactory.Create(connectionString);
 
+            _context = DbContextFactory.Create(connectionString);
             if (!string.IsNullOrEmpty(con.TownName))
             {
                 con.TownName = con.TownName;
@@ -837,8 +873,20 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddTaxPayer(int isUpdate, TaxPayer con)
+        public async Task<IActionResult> AddTaxPayer(int isUpdate, TaxPayer con, string townId = "")
         {
+            string dbame = string.Empty;
+            if (!string.IsNullOrEmpty(townId))
+            {
+                dbame = "RRC_" + townId.TrimStart().TrimEnd();
+            }
+            else
+            {
+                dbame = "RRC_Agawam";
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+
+            _context = DbContextFactory.Create(connectionString);
             try
             {
                 if (isUpdate == 1)
@@ -1605,8 +1653,20 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddProperty(int isUpdate, property con)
+        public async Task<IActionResult> AddProperty(int isUpdate, property con, string townId = "")
         {
+            string dbame = string.Empty;
+            if (!string.IsNullOrEmpty(townId))
+            {
+                dbame = "RRC_" + townId.TrimStart().TrimEnd();
+            }
+            else
+            {
+                dbame = "RRC_Agawam";
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+
+            _context = DbContextFactory.Create(connectionString);
             try
             {
                 if (isUpdate == 1)
