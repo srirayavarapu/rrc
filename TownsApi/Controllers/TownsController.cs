@@ -718,7 +718,7 @@ namespace TownsApi.Controllers
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> AddTown(Towns con)
+        public async Task<IActionResult> AddTown(Towns con, int isUpdate)
         {
             string dbame = string.Empty;
             dbame = "RRC";
@@ -726,113 +726,258 @@ namespace TownsApi.Controllers
 
             _context = DbContextFactory.Create(connectionString);
 
-            if (!string.IsNullOrEmpty(con.TownName))
+
+            if (isUpdate == 1)
             {
-                con.TownName = con.TownName;
+                try
+                {
+                    var townNumber = await _context.Towns.Where(u => u.TownId == con.TownId).ToListAsync();
+                    if (!string.IsNullOrEmpty(con.TownName))
+                    {
+                        townNumber[0].TownName = con.TownName;
+                    }
+                    if (!string.IsNullOrEmpty(con.Contact))
+                    {
+                        townNumber[0].Contact = con.Contact;
+                    }
+                    if (!string.IsNullOrEmpty(con.Address1))
+                    {
+                        townNumber[0].Address1 = con.Address1;
+                    }
+                    if (!string.IsNullOrEmpty(con.Address2))
+                    {
+                        townNumber[0].Address2 = con.Address2;
+                    }
+                    if (!string.IsNullOrEmpty(con.City))
+                    {
+                        townNumber[0].City = con.City;
+                    }
+                    if (!string.IsNullOrEmpty(con.State))
+                    {
+                        townNumber[0].State = con.State;
+                    }
+                    if (!string.IsNullOrEmpty(con.Zip))
+                    {
+                        townNumber[0].Zip = con.Zip;
+                    }
+                    if (!string.IsNullOrEmpty(con.ContactNumber))
+                    {
+                        townNumber[0].ContactNumber = con.ContactNumber;
+                    }
+                    if (!string.IsNullOrEmpty(con.DBName))
+                    {
+                        townNumber[0].DBName = con.DBName;
+                    }
+                    if (!string.IsNullOrEmpty(con.Notes))
+                    {
+                        townNumber[0].Notes = con.Notes;
+                    }
+                    if (!string.IsNullOrEmpty(con.MainPage))
+                    {
+                        townNumber[0].MainPage = con.MainPage;
+                    }
+                    if (!string.IsNullOrEmpty(con.SnapShots))
+                    {
+                        townNumber[0].SnapShots = con.SnapShots;
+                    }
+                    if (!string.IsNullOrEmpty(con.LoginTimeFrom))
+                    {
+                        townNumber[0].LoginTimeFrom = con.LoginTimeFrom;
+                    }
+                    if (!string.IsNullOrEmpty(con.LoginTimeTo))
+                    {
+                        townNumber[0].LoginTimeTo = con.LoginTimeTo;
+                    }
+                    if (!string.IsNullOrEmpty(con.AllowedIPs))
+                    {
+                        townNumber[0].AllowedIPs = con.AllowedIPs;
+                    }
+                    if (!string.IsNullOrEmpty(con.FTPInfo))
+                    {
+                        townNumber[0].FTPInfo = con.FTPInfo;
+                    }
+                    if (!string.IsNullOrEmpty(con.Website))
+                    {
+                        townNumber[0].Website = con.Website;
+                    }
+                    if (con.lng != 0)
+                    {
+                        townNumber[0].lng = con.lng;
+                    }
+                    if (con.lat != 0)
+                    {
+                        townNumber[0].lat = con.lat;
+                    }
+                    if (con.Taxpayer != 0)
+                    {
+                        townNumber[0].lng = con.Taxpayer;
+                    }
+                    if (con.Properties != 0)
+                    {
+                        townNumber[0].lng = con.Properties;
+                    }
+                    if (con.TotalValue != 0)
+                    {
+                        townNumber[0].lng = con.TotalValue;
+                    }
+                    if (con.GrowthValue != 0)
+                    {
+                        townNumber[0].lng = con.GrowthValue;
+                    }
+                    if (con.GrowthValue != 0)
+                    {
+                        townNumber[0].lng = con.GrowthValue;
+                    }
+                    if (con.TaxRate != 0)
+                    {
+                        townNumber[0].lng = con.TaxRate;
+                    }
+                    if (con.GrowthAmt != 0)
+                    {
+                        townNumber[0].lng = con.GrowthAmt;
+                    }
+                    if (con.GrowthYr != 0)
+                    {
+                        townNumber[0].lng = con.GrowthYr;
+                    }
+                    _context.Update(townNumber[0]);
+                    await _context.SaveChangesAsync();
+                    ResultObject successResult = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status200OK,
+                        token = null,
+                        data = con,
+                        Message = "Updated successfully"
+                    };
+                    return Ok(successResult);
+                }
+                catch(Exception ex)
+                {
+                    await _context.SaveChangesAsync();
+                    ResultObject successResult = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status200OK,
+                        token = null,
+                        data = con,
+                        Message = "Updated successfully"
+                    };
+                    return Ok(successResult);
+                }
+
             }
-            if (!string.IsNullOrEmpty(con.Contact))
+            else
             {
-                con.Contact = con.Contact;
-            }
-            if (!string.IsNullOrEmpty(con.Address1))
-            {
-                con.Address1 = con.Address1;
-            }
-            if (!string.IsNullOrEmpty(con.Address2))
-            {
-                con.Address2 = con.Address2;
-            }
-            if (!string.IsNullOrEmpty(con.City))
-            {
-                con.City = con.City;
-            }
-            if (!string.IsNullOrEmpty(con.State))
-            {
-                con.State = con.State;
-            }
-            if (!string.IsNullOrEmpty(con.Zip))
-            {
-                con.Zip = con.Zip;
-            }
-            if (!string.IsNullOrEmpty(con.ContactNumber))
-            {
-                con.ContactNumber = con.ContactNumber;
-            }
-            if (!string.IsNullOrEmpty(con.DBName))
-            {
-                con.DBName = con.DBName;
-            }
-            if (!string.IsNullOrEmpty(con.Notes))
-            {
-                con.Notes = con.Notes;
-            }
-            if (!string.IsNullOrEmpty(con.MainPage))
-            {
-                con.MainPage = con.MainPage;
-            }
-            if (!string.IsNullOrEmpty(con.SnapShots))
-            {
-                con.SnapShots = con.SnapShots;
-            }
-            if (!string.IsNullOrEmpty(con.LoginTimeFrom))
-            {
-                con.LoginTimeFrom = con.LoginTimeFrom;
-            }
-            if (!string.IsNullOrEmpty(con.LoginTimeTo))
-            {
-                con.LoginTimeTo = con.LoginTimeTo;
-            }
-            if (!string.IsNullOrEmpty(con.AllowedIPs))
-            {
-                con.AllowedIPs = con.AllowedIPs;
-            }
-            if (!string.IsNullOrEmpty(con.FTPInfo))
-            {
-                con.FTPInfo = con.FTPInfo;
-            }
-            if (!string.IsNullOrEmpty(con.Website))
-            {
-                con.Website = con.Website;
-            }
-            if (con.lng != 0)
-            {
-                con.lng = con.lng;
-            }
-            if (con.lat != 0)
-            {
-                con.lat = con.lat;
-            }
-            if (con.Taxpayer != 0)
-            {
-                con.lng = con.Taxpayer;
-            }
-            if (con.Properties != 0)
-            {
-                con.lng = con.Properties;
-            }
-            if (con.TotalValue != 0)
-            {
-                con.lng = con.TotalValue;
-            }
-            if (con.GrowthValue != 0)
-            {
-                con.lng = con.GrowthValue;
-            }
-            if (con.GrowthValue != 0)
-            {
-                con.lng = con.GrowthValue;
-            }
-            if (con.TaxRate != 0)
-            {
-                con.lng = con.TaxRate;
-            }
-            if (con.GrowthAmt != 0)
-            {
-                con.lng = con.GrowthAmt;
-            }
-            if (con.GrowthYr != 0)
-            {
-                con.lng = con.GrowthYr;
+                con.TownId = con.TownName;
+                if (!string.IsNullOrEmpty(con.TownName))
+                {
+                    con.TownName = con.TownName;
+                }
+                if (!string.IsNullOrEmpty(con.Contact))
+                {
+                    con.Contact = con.Contact;
+                }
+                if (!string.IsNullOrEmpty(con.Address1))
+                {
+                    con.Address1 = con.Address1;
+                }
+                if (!string.IsNullOrEmpty(con.Address2))
+                {
+                    con.Address2 = con.Address2;
+                }
+                if (!string.IsNullOrEmpty(con.City))
+                {
+                    con.City = con.City;
+                }
+                if (!string.IsNullOrEmpty(con.State))
+                {
+                    con.State = con.State;
+                }
+                if (!string.IsNullOrEmpty(con.Zip))
+                {
+                    con.Zip = con.Zip;
+                }
+                if (!string.IsNullOrEmpty(con.ContactNumber))
+                {
+                    con.ContactNumber = con.ContactNumber;
+                }
+                if (!string.IsNullOrEmpty(con.DBName))
+                {
+                    con.DBName = con.DBName;
+                }
+                if (!string.IsNullOrEmpty(con.Notes))
+                {
+                    con.Notes = con.Notes;
+                }
+                if (!string.IsNullOrEmpty(con.MainPage))
+                {
+                    con.MainPage = con.MainPage;
+                }
+                if (!string.IsNullOrEmpty(con.SnapShots))
+                {
+                    con.SnapShots = con.SnapShots;
+                }
+                if (!string.IsNullOrEmpty(con.LoginTimeFrom))
+                {
+                    con.LoginTimeFrom = con.LoginTimeFrom;
+                }
+                if (!string.IsNullOrEmpty(con.LoginTimeTo))
+                {
+                    con.LoginTimeTo = con.LoginTimeTo;
+                }
+                if (!string.IsNullOrEmpty(con.AllowedIPs))
+                {
+                    con.AllowedIPs = con.AllowedIPs;
+                }
+                if (!string.IsNullOrEmpty(con.FTPInfo))
+                {
+                    con.FTPInfo = con.FTPInfo;
+                }
+                if (!string.IsNullOrEmpty(con.Website))
+                {
+                    con.Website = con.Website;
+                }
+                if (con.lng != 0)
+                {
+                    con.lng = con.lng;
+                }
+                if (con.lat != 0)
+                {
+                    con.lat = con.lat;
+                }
+                if (con.Taxpayer != 0)
+                {
+                    con.lng = con.Taxpayer;
+                }
+                if (con.Properties != 0)
+                {
+                    con.lng = con.Properties;
+                }
+                if (con.TotalValue != 0)
+                {
+                    con.lng = con.TotalValue;
+                }
+                if (con.GrowthValue != 0)
+                {
+                    con.lng = con.GrowthValue;
+                }
+                if (con.GrowthValue != 0)
+                {
+                    con.lng = con.GrowthValue;
+                }
+                if (con.TaxRate != 0)
+                {
+                    con.lng = con.TaxRate;
+                }
+                if (con.GrowthAmt != 0)
+                {
+                    con.lng = con.GrowthAmt;
+                }
+                if (con.GrowthYr != 0)
+                {
+                    con.lng = con.GrowthYr;
+                }
             }
             _context.Add(con);
 
@@ -845,7 +990,7 @@ namespace TownsApi.Controllers
                     StatusCode = StatusCodes.Status200OK,
                     token = null,
                     data = con,
-                    Message = "Updated successfully"
+                    Message = "Added successfully"
                 };
                 return Ok(successResult);
 

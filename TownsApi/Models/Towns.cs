@@ -9,7 +9,7 @@ namespace TownsApi.Models
         [Key]
         public string? TownId { get; set; }
         public string? TownName { get; set; }
-        public int Taxpayer { get; set; }
+        public int? Taxpayer { get; set; }
         public int? Properties { get; set; }
         public decimal? TotalValue { get; set; }
         public decimal? GrowthValue { get; set; }
@@ -21,14 +21,12 @@ namespace TownsApi.Models
         public string? Address2 { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
-
         public string? Zip { get; set; }
         public string? ContactNumber { get; set; }
         public string? Notes { get; set; }
         public string? DBName { get; set; }
         public string? MainPage { get; set; }
         public bool? CurrentActive { get; set; }
-        public bool? RRCPP { get; set; }
         public string? SnapShots { get; set; }
         public string? LoginTimeFrom { get; set; }
         public string? LoginTimeTo { get; set; }
@@ -37,6 +35,7 @@ namespace TownsApi.Models
         public decimal? lat { get; set; }
         public decimal? lng { get; set; }
         public string? Website { get; set; }
+        public bool? RRCPP { get; set; }
 
     }
     public class ResultObject
