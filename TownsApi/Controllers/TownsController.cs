@@ -1538,8 +1538,20 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetLookUPValues()
+        public async Task<IActionResult> GetLookUPValues(string townId="")
         {
+            string dbame = string.Empty;
+            if (!string.IsNullOrEmpty(townId))
+            {
+                dbame = "RRC_" + townId.TrimStart().TrimEnd();
+            }
+            else
+            {
+                dbame = "RRC_Agawam";
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+
+            _context = DbContextFactory.Create(connectionString);
             try
             {
                 LookUPData lookUPData = new LookUPData();
