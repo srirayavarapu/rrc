@@ -6,7 +6,7 @@
 
         public DataService(IConfiguration configuration)
         {
-            _connectionString = configuration.GetConnectionString("HotelSqlServer");
+            _connectionString = configuration.GetConnectionString("BaseConnection");
         }
     }
 }

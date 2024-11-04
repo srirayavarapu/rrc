@@ -2,12 +2,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using TownsApi;
 using TownsApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddScoped<IConnectionStringProvider, ConnectionStringProvider>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -24,7 +27,18 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
     });
-builder.Services.AddDbContext<TownDBContext>(i => i.UseSqlServer(builder.Configuration.GetConnectionString("HotelSqlServer")));
+//builder.Services.AddDbContext<TownDBContext>(i => i.UseSqlServer(builder.Configuration.GetConnectionString("BaseConnection")));
+builder.Services.AddDbContext<TownDBContext>((serviceProvider, options) =>
+{
+    // Retrieve the IConnectionStringProvider from the service provider
+    var connectionStringProvider = serviceProvider.GetRequiredService<IConnectionStringProvider>();
+
+    // Specify the dynamic database name
+    var connectionString = connectionStringProvider.GetConnectionString("RRC");
+
+    // Use the dynamic connection string
+    options.UseSqlServer(connectionString);
+});
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

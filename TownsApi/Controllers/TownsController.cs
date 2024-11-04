@@ -1,19 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components.Routing;
+﻿using Dapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using System.Numerics;
-using System;
+using System.Text.Json;
 using TownsApi.Data;
 using TownsApi.Models;
-using static Azure.Core.HttpHeader;
-using Microsoft.IdentityModel.Tokens;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using Microsoft.Data.SqlClient;
-using Dapper;
-using System.Text.Json;
-using Microsoft.Extensions.Options;
 
 namespace TownsApi.Controllers
 {
@@ -23,11 +14,12 @@ namespace TownsApi.Controllers
     {
         private readonly TownDBContext _context;
         private readonly IConfiguration _configuration;
+        private readonly IConnectionStringProvider _connectionStringProvider;
 
-        public TownsController(TownDBContext context, IConfiguration configuration)
+        public TownsController(TownDBContext context,IConnectionStringProvider connectionStringProvider)
         {
             _context = context;
-            _configuration = configuration;
+            _connectionStringProvider = connectionStringProvider;
         }
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
@@ -85,10 +77,9 @@ namespace TownsApi.Controllers
         {
             try
             {
-                var ConnectionString = "Server=40.114.33.101;Initial Catalog=RRC;Persist Security Info=False;User ID=srikanth;Password=Sri@vedas#;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=100;";
-                var connection = new Microsoft.Data.SqlClient.SqlConnection(ConnectionString);
-                var data = connection.Query<Towns>("Select * from Towns").ToList();
-
+                var connectionString = _connectionStringProvider.GetConnectionString("RRC");
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+                var data = await connection.QueryAsync<Towns>("Select * from Towns");
                 if (data.Count() <= 0)
                 {
 
@@ -189,8 +180,8 @@ namespace TownsApi.Controllers
 
         }
 
-        
-      
+
+
 
         [HttpGet("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> GetTownDetails(int id)
@@ -254,11 +245,23 @@ namespace TownsApi.Controllers
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllTaxPayers()
+        public async Task<IActionResult> GetAllTaxPayers(string townname = "")
         {
             try
             {
-                var taxPayers = await _context.TaxPayer.ToListAsync();
+                string dbame = string.Empty;
+                if (!string.IsNullOrEmpty(townname))
+                {
+                    dbame = "RRC_" + townname.TrimStart().TrimEnd();
+                }
+                else
+                {
+                    dbame = "RRC_Agawam";
+                }
+                var connectionString = _connectionStringProvider.GetConnectionString(dbame);
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+                var taxPayers = connection.Query<TaxPayer>("Select * from TaxPayer").ToList();
+                // var taxPayers = await _context.TaxPayer.ToListAsync();
                 taxPayers = taxPayers
         .Select(e =>
         {
@@ -441,8 +444,8 @@ namespace TownsApi.Controllers
         //        connection.Open();
         //        var products = await _context.OP_Security_Points.FromSqlRaw("SP_OP_UserRights 'cd','WINTHROP','50.203.98.226'")
         //.ToListAsync();
-       
-   
+
+
         //        //using (var command = connection.CreateCommand())
         //        //{
         //        //    command.CommandText = "SP_OP_UserRights";
