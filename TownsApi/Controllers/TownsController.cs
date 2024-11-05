@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Primitives;
 using System.Text.Json;
 using TownsApi.Data;
 using TownsApi.Models;
@@ -127,6 +128,10 @@ namespace TownsApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllProperties(int accountNum, string townId = "")
         {
+            if (Request.Headers.TryGetValue("townId", out StringValues townname))
+            {
+                townId = townname;
+            }
             string dbame = string.Empty;
             if (!string.IsNullOrEmpty(townId))
             {
@@ -262,6 +267,11 @@ namespace TownsApi.Controllers
         {
             try
             {
+
+                if (Request.Headers.TryGetValue("townId", out StringValues townname))
+                {
+                    townId = townname;
+                }
                 string dbame = string.Empty;
                 if (!string.IsNullOrEmpty(townId))
                 {
@@ -348,6 +358,11 @@ namespace TownsApi.Controllers
         {
             try
             {
+
+                if (Request.Headers.TryGetValue("townId", out StringValues townname))
+                {
+                    townId = townname;
+                }
                 string dbame = string.Empty;
                 if (!string.IsNullOrEmpty(townId))
                 {
@@ -396,6 +411,11 @@ namespace TownsApi.Controllers
         public async Task<IActionResult> LeaseDetails(string accountNo, string townId = "")
         {
             string dbame = string.Empty;
+
+            if (Request.Headers.TryGetValue("townId", out StringValues townname))
+            {
+                townId = townname;
+            }
             if (!string.IsNullOrEmpty(townId))
             {
                 dbame = "RRC_" + townId.TrimStart().TrimEnd();
@@ -720,6 +740,8 @@ namespace TownsApi.Controllers
         [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> AddTown(Towns con, int isUpdate)
         {
+
+          
             string dbame = string.Empty;
             dbame = "RRC";
             var connectionString = _connectionStringProvider.GetConnectionString(dbame);
@@ -852,7 +874,7 @@ namespace TownsApi.Controllers
                     };
                     return Ok(successResult);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     await _context.SaveChangesAsync();
                     ResultObject successResult = new ResultObject
@@ -1024,6 +1046,10 @@ namespace TownsApi.Controllers
         [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> AddTaxPayer(int isUpdate, TaxPayer con, string townId = "")
         {
+            if (Request.Headers.TryGetValue("townId", out StringValues townname))
+            {
+                townId = townname;
+            }
             string dbame = string.Empty;
             if (!string.IsNullOrEmpty(townId))
             {
@@ -1689,6 +1715,13 @@ namespace TownsApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetLookUPValues(string townId = "")
         {
+          
+
+            if (Request.Headers.TryGetValue("townId", out StringValues townname))
+            {
+                townId = townname;
+            }
+
             List<pricingManual> manuals = new List<pricingManual>();
             string dbame = string.Empty;
             try
@@ -1836,6 +1869,11 @@ namespace TownsApi.Controllers
         [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> AddProperty(int isUpdate, property con, string townId = "")
         {
+
+            if (Request.Headers.TryGetValue("townId", out StringValues townname))
+            {
+                townId = townname;
+            }
             string dbame = string.Empty;
             if (!string.IsNullOrEmpty(townId))
             {
