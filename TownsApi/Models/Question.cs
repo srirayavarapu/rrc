@@ -3,15 +3,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TownsApi.Models
 {
-    [Table("Question")]
     public class Question
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [Key]
         public int Id { get; set; }
         public string Text { get; set; }
-        public int Type { get; set; } // Store enum as int
-        public int SurveyId { get; set; } // Foreign key
+        public QuestionType Type { get; set; }  // Enum type for question type
+
+        public int SurveyId { get; set; }       // Foreign key to Survey
+        public Survey Survey { get; set; }       // Navigation property
+
+        // Navigation property
+        public ICollection<Answer> Answers { get; set; }
+        public ICollection<Response> Responses { get; set; }
     }
+
+
 
 }

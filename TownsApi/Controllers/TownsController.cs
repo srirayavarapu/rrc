@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Primitives;
 using System.Text.Json;
 using TownsApi.Data;
@@ -72,6 +71,22 @@ namespace TownsApi.Controllers
             }
 
         }
+
+        //[HttpGet("/rrc/api/[controller]/[action]")]
+        //[ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<List<SurveryDetails>> GetAllSurveyDetailsAsync()
+        //{
+          
+        //    var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+        //    var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+        //    _context = DbContextFactory.Create(connectionString);
+        //    var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
+
+       
+
+        //    return surveys;
+        //}
 
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
