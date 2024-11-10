@@ -72,21 +72,179 @@ namespace TownsApi.Controllers
 
         }
 
-        //[HttpGet("/rrc/api/[controller]/[action]")]
-        //[ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<List<SurveryDetails>> GetAllSurveyDetailsAsync()
-        //{
-          
-        //    var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
-        //    var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
-        //    _context = DbContextFactory.Create(connectionString);
-        //    var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<List<Survey>> GetAllSurveyDetailsAsync()
+        {
 
-       
+            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+            var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+            _context = DbContextFactory.Create(connectionString);
+            var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
+            var surveys = new List<Survey>();
+            foreach (var row in data)
+            {
+                // Find or create Survey
+                var survey = surveys.FirstOrDefault(s => s.Id == row.SurveyId);
+                if (survey == null)
+                {
+                    survey = new Survey
+                    {
+                        Id = row.SurveyId,
+                        Title = row.SurveyTitle,
+                        Description = row.SurveyDescription
+                    };
+                    surveys.Add(survey);
+                }
 
-        //    return surveys;
-        //}
+                // Find or create Question
+                if (row.QuestionId.HasValue)
+                {
+                    if(survey.Questions==null)
+                    {
+                        survey.Questions=new List<Question>();
+                    }
+                    var question = survey.Questions?.FirstOrDefault(q => q.Id == row.QuestionId);
+                    if (question == null)
+                    {
+                        question = new Question
+                        {
+                            Id = row.QuestionId.Value,
+                            Text = row.QuestionText,
+                            Type = row.QuestionType.HasValue ? (QuestionType)row.QuestionType.Value : default
+                        };
+                        survey.Questions.Add(question);
+                    }
+
+                    // Find or create Answer
+                    if (row.AnswerId.HasValue)
+                    {
+                        if(question.Answers==null)
+                        {
+                            question.Answers=new List<Answer>();
+                        }
+                        if (!question.Answers.Any(a => a.Id == row.AnswerId))
+                        {
+                            question.Answers.Add(new Answer
+                            {
+                                Id = row.AnswerId.Value,
+                                Text = row.AnswerText
+                            });
+                        }
+                    }
+
+                    // Find or create Response
+                    if (row.ResponseId.HasValue)
+                    {
+                        if(question.Responses==null)
+                        {
+                            question.Responses=new List<Response>();
+                        }
+                        if (!question.Responses.Any(r => r.Id == row.ResponseId))
+                        {
+                            question.Responses.Add(new Response
+                            {
+                                Id = row.ResponseId.Value,
+                                TextResponse = row.ResponseText,
+                                User = row.UserId.HasValue ? new User
+                                {
+                                    Id = row.UserId.Value,
+                                    Username = row.Username,
+                                    Email = row.UserEmail
+                                } : null
+                            });
+                        }
+                    }
+                }
+            }
+            List<SurveryDetails> surveryDetails = new List<SurveryDetails>();
+
+            return surveys;
+        }
+
+
+        [HttpPost("submitAnswer")]
+        public async Task<IActionResult> SubmitAnswer([FromBody] AnswerSubmission submission)
+        {
+            if (submission == null || submission.SurveyId == 0 || submission.QuestionId == 0 || string.IsNullOrEmpty(submission.UserEmail))
+            {
+                return BadRequest("Invalid submission data.");
+            }
+
+            // Check if the submission is correct based on question type
+            switch (submission.QuestionType)
+            {
+                case QuestionType.MultipleChoice:
+                case QuestionType.Dropdown:
+                    if (!submission.AnswerId.HasValue)
+                    {
+                        return BadRequest("AnswerId is required for MultipleChoice and Dropdown questions.");
+                    }
+                    break;
+
+                case QuestionType.Text:
+                    if (string.IsNullOrWhiteSpace(submission.TextResponse))
+                    {
+                        return BadRequest("TextResponse is required for Text questions.");
+                    }
+                    break;
+
+                default:
+                    return BadRequest("Invalid question type.");
+            }
+
+            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+           // var connectionSQl = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Get the UserId by email or create a new user if necessary
+                var userId = await GetOrCreateUserId(submission.UserEmail, connection);
+
+                // Insert the response
+                var query = @"INSERT INTO Responses (SurveyId, QuestionId, AnswerId, TextResponse, UserId)
+                      VALUES (@SurveyId, @QuestionId, @AnswerId, @TextResponse, @UserId)";
+
+                await connection.ExecuteAsync(query, new
+                {
+                    SurveyId = submission.SurveyId,
+                    QuestionId = submission.QuestionId,
+                    AnswerId = submission.AnswerId,
+                    TextResponse = submission.TextResponse,
+                    UserId = userId
+                });
+            }
+
+            return Ok("Answer submitted successfully.");
+        }
+
+        private async Task<int> GetOrCreateUserId(string email, SqlConnection connection)
+        {
+            // Query to check if the user exists based on email
+            var userId = await connection.QuerySingleOrDefaultAsync<int?>(
+                "SELECT Id FROM Users WHERE Email = @Email", new { Email = email });
+
+            // If the user already exists, return the UserId
+            if (userId.HasValue)
+            {
+                return userId.Value;
+            }
+
+            // If the user does not exist, insert a new user record and get the new UserId
+            var insertUserQuery = @"
+        INSERT INTO Users (Email, Username) 
+        VALUES (@Email, @Username);
+        SELECT CAST(SCOPE_IDENTITY() as int);";
+
+            // Execute the insert and retrieve the new UserId
+            var newUserId = await connection.QuerySingleAsync<int>(insertUserQuery,
+                new { Email = email, Username = email.Split('@')[0] }); // Use part of email as default username
+
+            return newUserId;
+        }
+
 
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
