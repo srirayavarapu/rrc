@@ -164,7 +164,10 @@ namespace TownsApi.Controllers
         }
 
 
-        [HttpPost("submitAnswer")]
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SubmitAnswer([FromBody] AnswerSubmission submission)
         {
             if (submission == null || submission.SurveyId == 0 || submission.QuestionId == 0 || string.IsNullOrEmpty(submission.UserEmail))
