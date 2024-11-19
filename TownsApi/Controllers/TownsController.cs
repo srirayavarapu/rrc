@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -22,55 +23,6 @@ namespace TownsApi.Controllers
             _context = context;
             _connectionStringProvider = connectionStringProvider;
         }
-        [HttpGet("/rrc/api/[controller]/[action]")]
-        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllSurveys()
-        {
-            try
-            {
-                var users = await _context.Survey.ToListAsync();
-
-                if (users.Count() <= 0)
-                {
-
-                    ResultObject patResult = new ResultObject
-                    {
-                        Status = false,
-                        StatusCode = StatusCodes.Status401Unauthorized,
-                        token = null,
-                        Message = "No Survey exists",
-                        data = null
-                    };
-                    return Ok(patResult);
-                }
-
-
-                ResultObject patResult1 = new ResultObject
-                {
-                    Status = true,
-                    StatusCode = StatusCodes.Status200OK,
-                    token = null,
-                    Message = "Data Found",
-                    data = users
-                };
-                return Ok(patResult1);
-
-            }
-            catch (Exception ex)
-            {
-                ResultObject patResult = new ResultObject
-                {
-                    Status = true,
-                    StatusCode = StatusCodes.Status422UnprocessableEntity,
-                    token = null,
-                    Message = ex.StackTrace,
-                    data = null
-                };
-                return Ok(patResult);
-            }
-
-        }
 
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
@@ -81,7 +33,7 @@ namespace TownsApi.Controllers
             var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
             var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
             _context = DbContextFactory.Create(connectionString);
-            var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
+            var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId,s.CreatedBy AS CreatedBy, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
             var surveys = new List<Survey>();
             foreach (var row in data)
             {
@@ -93,7 +45,8 @@ namespace TownsApi.Controllers
                     {
                         Id = row.SurveyId,
                         Title = row.SurveyTitle,
-                        Description = row.SurveyDescription
+                        Description = row.SurveyDescription,
+                        CreatedBy = row.CreatedBy
                     };
                     surveys.Add(survey);
                 }
@@ -101,9 +54,9 @@ namespace TownsApi.Controllers
                 // Find or create Question
                 if (row.QuestionId.HasValue)
                 {
-                    if(survey.Questions==null)
+                    if (survey.Questions == null)
                     {
-                        survey.Questions=new List<Question>();
+                        survey.Questions = new List<Question>();
                     }
                     var question = survey.Questions?.FirstOrDefault(q => q.Id == row.QuestionId);
                     if (question == null)
@@ -120,9 +73,9 @@ namespace TownsApi.Controllers
                     // Find or create Answer
                     if (row.AnswerId.HasValue)
                     {
-                        if(question.Answers==null)
+                        if (question.Answers == null)
                         {
-                            question.Answers=new List<Answer>();
+                            question.Answers = new List<Answer>();
                         }
                         if (!question.Answers.Any(a => a.Id == row.AnswerId))
                         {
@@ -137,9 +90,9 @@ namespace TownsApi.Controllers
                     // Find or create Response
                     if (row.ResponseId.HasValue)
                     {
-                        if(question.Responses==null)
+                        if (question.Responses == null)
                         {
-                            question.Responses=new List<Response>();
+                            question.Responses = new List<Response>();
                         }
                         if (!question.Responses.Any(r => r.Id == row.ResponseId))
                         {
@@ -162,7 +115,65 @@ namespace TownsApi.Controllers
 
             return surveys;
         }
+        public class LoginRequest
+        {
+            public string Username { get; set; }
+            public string Password { get; set; }
+        }
 
+        public class LoginResponse
+        {
+            public int UserId { get; set; }
+            public string Username { get; set; }
+            public List<Survey> Surveys { get; set; }
+        }
+
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
+            if (string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Password))
+            {
+                return BadRequest("Username and password are required.");
+            }
+            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                // Validate user credentials
+                var query = @"SELECT Id, Username, Password FROM Op_Employee_Survey WHERE Username = @Username AND Active = 1";
+                var user = await connection.QuerySingleOrDefaultAsync<dynamic>(query, new { loginRequest.Username });
+
+                if (user == null)
+                {
+                    return Unauthorized("Invalid username or password.");
+                }
+
+                // Verify password (consider hashing passwords in production)
+                if (user.Password != loginRequest.Password)
+                {
+                    return Unauthorized("Invalid username or password.");
+                }
+
+                // Get surveys linked to the user
+                var surveysQuery = @"
+                SELECT s.Id, s.Title, s.Description
+                FROM Surveys s
+                WHERE s.CreatedBy = @UserId"; // Assuming `Surveys` table has a CreatedBy column for user linkage
+                var surveys = (await connection.QueryAsync<Survey>(surveysQuery, new { UserId = user.Id })).ToList();
+
+                // Prepare the response
+                var response = new LoginResponse
+                {
+                    UserId = user.Id,
+                    Username = user.Username,
+                    Surveys = surveys
+                };
+
+                return Ok(response);
+            }
+        }
 
 
         [HttpPost("/rrc/api/[controller]/[action]")]
@@ -198,7 +209,7 @@ namespace TownsApi.Controllers
             }
 
             var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
-           // var connectionSQl = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+            // var connectionSQl = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
             using (var connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();

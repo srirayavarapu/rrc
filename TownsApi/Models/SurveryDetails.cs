@@ -5,7 +5,7 @@
         public int? SurveyId { get; set; }
         public string? SurveyTitle { get; set; }
         public string? SurveyDescription { get; set; }
-
+        public int? CreatedBy { get; set; }
         public int? QuestionId { get; set; }
         public string? QuestionText { get; set; }
         public QuestionType? QuestionType { get; set; }
