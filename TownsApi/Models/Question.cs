@@ -16,7 +16,4 @@ namespace TownsApi.Models
         public ICollection<Answer> Answers { get; set; }
         public ICollection<Response> Responses { get; set; }
     }
-
-
-
 }

@@ -171,7 +171,64 @@ namespace TownsApi.Controllers
             return Ok(patResult1);
         }
 
-      
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> CreateSurvey([FromBody] SurveyRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Title) || string.IsNullOrEmpty(request.Description))
+            {
+                return BadRequest("Title and Description are required.");
+            }
+
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Insert Survey
+                    const string insertSurveyQuery = @"
+                    INSERT INTO Surveys (Title, Description, CreatedBy)
+                    OUTPUT INSERTED.Id
+                    VALUES (@Title, @Description, @CreatedBy)";
+
+                    var surveyId = await connection.ExecuteScalarAsync<int>(insertSurveyQuery, new
+                    {
+                        Title = request.Title,
+                        Description = request.Description,
+                        CreatedBy = request.CreatedBy
+                    });
+
+                    // Insert Questions if provided
+                    if (request.Questions?.Count > 0)
+                    {
+                        const string insertQuestionQuery = @"
+                        INSERT INTO Questions (Text, Type, SurveyId)
+                        VALUES (@Text, @Type, @SurveyId)";
+
+                        foreach (var question in request.Questions)
+                        {
+                            await connection.ExecuteAsync(insertQuestionQuery, new
+                            {
+                                Text = question.Text,
+                                Type = question.Type,
+                                SurveyId = surveyId
+                            });
+                        }
+                    }
+
+                    return Ok(new { SurveyId = surveyId });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
