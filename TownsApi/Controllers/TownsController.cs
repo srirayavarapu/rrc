@@ -175,58 +175,131 @@ namespace TownsApi.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> CreateSurvey([FromBody] SurveyRequest request)
         {
-            if (string.IsNullOrEmpty(request.Title) || string.IsNullOrEmpty(request.Description))
+            if (string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Description))
             {
-                return BadRequest("Title and Description are required.");
+                return BadRequest("Title and description are required.");
             }
 
             try
             {
-                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+                    var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
 
-                using (var connection = new SqlConnection(_connectionString))
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // Insert the survey
+                const string insertSurveyQuery = @"
+                INSERT INTO Surveys (Title, Description, CreatedBy)
+                OUTPUT INSERTED.Id
+                VALUES (@Title, @Description, @CreatedBy);
+            ";
+                var surveyId = await connection.ExecuteScalarAsync<int>(insertSurveyQuery, new
                 {
-                    await connection.OpenAsync();
+                    request.Title,
+                    request.Description,
+                    request.CreatedBy
+                });
 
-                    // Insert Survey
-                    const string insertSurveyQuery = @"
-                    INSERT INTO Surveys (Title, Description, CreatedBy)
-                    OUTPUT INSERTED.Id
-                    VALUES (@Title, @Description, @CreatedBy)";
-
-                    var surveyId = await connection.ExecuteScalarAsync<int>(insertSurveyQuery, new
+                if (request.Questions != null && request.Questions.Any())
+                {
+                    foreach (var question in request.Questions)
                     {
-                        Title = request.Title,
-                        Description = request.Description,
-                        CreatedBy = request.CreatedBy
-                    });
-
-                    // Insert Questions if provided
-                    if (request.Questions?.Count > 0)
-                    {
+                        // Insert the question
                         const string insertQuestionQuery = @"
                         INSERT INTO Questions (Text, Type, SurveyId)
-                        VALUES (@Text, @Type, @SurveyId)";
-
-                        foreach (var question in request.Questions)
+                        OUTPUT INSERTED.Id
+                        VALUES (@Text, @Type, @SurveyId);
+                    ";
+                        var questionId = await connection.ExecuteScalarAsync<int>(insertQuestionQuery, new
                         {
-                            await connection.ExecuteAsync(insertQuestionQuery, new
+                            question.Text,
+                            question.Type,
+                            SurveyId = surveyId
+                        });
+
+                        // Insert the answers (if applicable)
+                        if (question.Answers != null && question.Answers.Any())
+                        {
+                            const string insertAnswerQuery = @"
+                            INSERT INTO Answers (Text, QuestionId)
+                            VALUES (@Text, @QuestionId);
+                        ";
+
+                            foreach (var answer in question.Answers)
                             {
-                                Text = question.Text,
-                                Type = question.Type,
-                                SurveyId = surveyId
-                            });
+                                await connection.ExecuteAsync(insertAnswerQuery, new
+                                {
+                                    answer.Text,
+                                    QuestionId = questionId
+                                });
+                            }
                         }
                     }
-
-                    return Ok(new { SurveyId = surveyId });
                 }
+
+                return Ok(new { SurveyId = surveyId });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
+        //public async Task<IActionResult> CreateSurvey([FromBody] SurveyRequest request)
+        //{
+        //    if (string.IsNullOrEmpty(request.Title) || string.IsNullOrEmpty(request.Description))
+        //    {
+        //        return BadRequest("Title and Description are required.");
+        //    }
+
+        //    try
+        //    {
+        //        var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+        //        using (var connection = new SqlConnection(_connectionString))
+        //        {
+        //            await connection.OpenAsync();
+
+        //            // Insert Survey
+        //            const string insertSurveyQuery = @"
+        //            INSERT INTO Surveys (Title, Description, CreatedBy)
+        //            OUTPUT INSERTED.Id
+        //            VALUES (@Title, @Description, @CreatedBy)";
+
+        //            var surveyId = await connection.ExecuteScalarAsync<int>(insertSurveyQuery, new
+        //            {
+        //                Title = request.Title,
+        //                Description = request.Description,
+        //                CreatedBy = request.CreatedBy
+        //            });
+
+        //            // Insert Questions if provided
+        //            if (request.Questions?.Count > 0)
+        //            {
+        //                const string insertQuestionQuery = @"
+        //                INSERT INTO Questions (Text, Type, SurveyId)
+        //                VALUES (@Text, @Type, @SurveyId)";
+
+        //                foreach (var question in request.Questions)
+        //                {
+        //                    await connection.ExecuteAsync(insertQuestionQuery, new
+        //                    {
+        //                        Text = question.Text,
+        //                        Type = question.Type,
+        //                        SurveyId = surveyId
+        //                    });
+        //                }
+        //            }
+
+        //            return Ok(new { SurveyId = surveyId });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
 
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
