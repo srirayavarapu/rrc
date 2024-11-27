@@ -1,5 +1,5 @@
-﻿using Dapper;
-using Microsoft.AspNetCore.Identity.Data;
+﻿using Azure;
+using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +7,6 @@ using Microsoft.Extensions.Primitives;
 using System.Text.Json;
 using TownsApi.Data;
 using TownsApi.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TownsApi.Controllers
 {
@@ -93,11 +92,11 @@ namespace TownsApi.Controllers
                     {
                         if (question.Responses == null)
                         {
-                            question.Responses = new List<Response>();
+                            question.Responses = new List<Models.Response>();
                         }
                         if (!question.Responses.Any(r => r.Id == row.ResponseId))
                         {
-                            question.Responses.Add(new Response
+                            question.Responses.Add(new Models.Response
                             {
                                 Id = row.ResponseId.Value,
                                 TextResponse = row.ResponseText,
@@ -265,8 +264,15 @@ namespace TownsApi.Controllers
                         Username = email.Split('@')[0], // Derive username from email
                         Email = email
                     });
-
-                    return Ok(newUser); // Return the newly created user
+                    ResultObject patResult1 = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status200OK,
+                        token = null,
+                        Message = "Responses submitted successfully.",
+                        data = newUser
+                    };
+                    return Ok(patResult1);
                 }
             }
             catch (Exception ex)
@@ -338,7 +344,15 @@ namespace TownsApi.Controllers
                         }
 
                         transaction.Commit();
-                        return Ok("Responses submitted successfully.");
+                        ResultObject patResult1 = new ResultObject
+                        {
+                            Status = true,
+                            StatusCode = StatusCodes.Status200OK,
+                            token = null,
+                            Message = "Responses submitted successfully.",
+                            data = "Responses submitted successfully."
+                        };
+                        return Ok(patResult1);
                     }
                     catch (Exception ex)
                     {
@@ -418,11 +432,11 @@ namespace TownsApi.Controllers
                     {
                         if (question.Responses == null)
                         {
-                            question.Responses = new List<Response>();
+                            question.Responses = new List<Models.Response>();
                         }
                         if (!question.Responses.Any(r => r.Id == row.ResponseId))
                         {
-                            question.Responses.Add(new Response
+                            question.Responses.Add(new Models.Response
                             {
                                 Id = row.ResponseId.Value,
                                 TextResponse = row.ResponseText,
@@ -501,7 +515,15 @@ namespace TownsApi.Controllers
                     Surveys = surveys
                 };
 
-                return Ok(response);
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = response
+                };
+                return Ok(patResult1);
             }
         }
 
