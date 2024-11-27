@@ -459,7 +459,7 @@ namespace TownsApi.Controllers
 
 
         [HttpPost("/rrc/api/[controller]/[action]")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> SurveyCompanyEmployeeLogin([FromBody] LoginRequest loginRequest)
         {
             if (string.IsNullOrEmpty(loginRequest.Username) || string.IsNullOrEmpty(loginRequest.Password))
             {
