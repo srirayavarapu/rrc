@@ -117,59 +117,59 @@ namespace TownsApi.Controllers
             return surveys;
         }
 
-        [HttpPost("/rrc/api/[controller]/[action]")]
-        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> SubmitSurveyAnswersAsync(int userId, List<SurveryDetails> responses)
-        {
-            const string query = @"
-        INSERT INTO Responses (SurveyId, QuestionId, UserId, AnswerId, TextResponse)
-        VALUES (@SurveyId, @QuestionId, @UserId, @AnswerId, @TextResponse);
-    ";
-            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+    //    [HttpPost("/rrc/api/[controller]/[action]")]
+    //    [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+    //    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    //    public async Task<IActionResult> SubmitSurveyAnswersAsync(int userId, List<SurveryDetails> responses)
+    //    {
+    //        const string query = @"
+    //    INSERT INTO Responses (SurveyId, QuestionId, UserId, AnswerId, TextResponse)
+    //    VALUES (@SurveyId, @QuestionId, @UserId, @AnswerId, @TextResponse);
+    //";
+    //        var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
 
-            using (var connection = new SqlConnection(connectionString))
-            {
-                foreach (var response in responses)
-                {
-                    // Validate QuestionType and determine how to store the response
-                    if (response.QuestionType == QuestionType.MultipleChoice || response.QuestionType == QuestionType.Dropdown)
-                    {
-                        if (response.AnswerId == null)
-                        {
-                            throw new ArgumentException($"AnswerId is required for question {response.QuestionId}.");
-                        }
-                    }
-                    else if (response.QuestionType == QuestionType.Text)
-                    {
-                        if (string.IsNullOrWhiteSpace(response.ResponseText))
-                        {
-                            throw new ArgumentException($"ResponseText is required for question {response.QuestionId}.");
-                        }
-                    }
+    //        using (var connection = new SqlConnection(connectionString))
+    //        {
+    //            foreach (var response in responses)
+    //            {
+    //                // Validate QuestionType and determine how to store the response
+    //                if (response.QuestionType == QuestionType.MultipleChoice || response.QuestionType == QuestionType.Dropdown)
+    //                {
+    //                    if (response.AnswerId == null)
+    //                    {
+    //                        throw new ArgumentException($"AnswerId is required for question {response.QuestionId}.");
+    //                    }
+    //                }
+    //                else if (response.QuestionType == QuestionType.Text)
+    //                {
+    //                    if (string.IsNullOrWhiteSpace(response.ResponseText))
+    //                    {
+    //                        throw new ArgumentException($"ResponseText is required for question {response.QuestionId}.");
+    //                    }
+    //                }
 
-                    // Insert the response into the database
-                    await connection.ExecuteAsync(query, new
-                    {
-                        SurveyId = response.SurveyId,
-                        QuestionId = response.QuestionId,
-                        UserId = userId,
-                        AnswerId = response.QuestionType == QuestionType.Text ? null : response.AnswerId,
-                        TextResponse = response.QuestionType == QuestionType.Text ? response.ResponseText : null
-                    });
-                }
-            }
+    //                // Insert the response into the database
+    //                await connection.ExecuteAsync(query, new
+    //                {
+    //                    SurveyId = response.SurveyId,
+    //                    QuestionId = response.QuestionId,
+    //                    UserId = userId,
+    //                    AnswerId = response.QuestionType == QuestionType.Text ? null : response.AnswerId,
+    //                    TextResponse = response.QuestionType == QuestionType.Text ? response.ResponseText : null
+    //                });
+    //            }
+    //        }
 
-            ResultObject patResult1 = new ResultObject
-            {
-                Status = true,
-                StatusCode = StatusCodes.Status200OK,
-                token = null,
-                Message = "Data Found",
-                data = null
-            };
-            return Ok(patResult1);
-        }
+    //        ResultObject patResult1 = new ResultObject
+    //        {
+    //            Status = true,
+    //            StatusCode = StatusCodes.Status200OK,
+    //            token = null,
+    //            Message = "Data Found",
+    //            data = null
+    //        };
+    //        return Ok(patResult1);
+    //    }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
@@ -275,10 +275,11 @@ namespace TownsApi.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [HttpPost("submit")]
         public async Task<IActionResult> SubmitSurveyResponses([FromBody] List<SurveyResponse> responses)
         {
             if (responses == null || !responses.Any())
@@ -505,63 +506,63 @@ namespace TownsApi.Controllers
         }
 
 
-        [HttpPost("/rrc/api/[controller]/[action]")]
-        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> SubmitAnswer([FromBody] AnswerSubmission submission)
-        {
-            if (submission == null || submission.SurveyId == 0 || submission.QuestionId == 0 || string.IsNullOrEmpty(submission.UserEmail))
-            {
-                return BadRequest("Invalid submission data.");
-            }
+        //[HttpPost("/rrc/api/[controller]/[action]")]
+        //[ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //public async Task<IActionResult> SubmitAnswer([FromBody] AnswerSubmission submission)
+        //{
+        //    if (submission == null || submission.SurveyId == 0 || submission.QuestionId == 0 || string.IsNullOrEmpty(submission.UserEmail))
+        //    {
+        //        return BadRequest("Invalid submission data.");
+        //    }
 
-            // Check if the submission is correct based on question type
-            switch (submission.QuestionType)
-            {
-                case QuestionType.MultipleChoice:
-                case QuestionType.Dropdown:
-                    if (!submission.AnswerId.HasValue)
-                    {
-                        return BadRequest("AnswerId is required for MultipleChoice and Dropdown questions.");
-                    }
-                    break;
+        //    // Check if the submission is correct based on question type
+        //    switch (submission.QuestionType)
+        //    {
+        //        case QuestionType.MultipleChoice:
+        //        case QuestionType.Dropdown:
+        //            if (!submission.AnswerId.HasValue)
+        //            {
+        //                return BadRequest("AnswerId is required for MultipleChoice and Dropdown questions.");
+        //            }
+        //            break;
 
-                case QuestionType.Text:
-                    if (string.IsNullOrWhiteSpace(submission.TextResponse))
-                    {
-                        return BadRequest("TextResponse is required for Text questions.");
-                    }
-                    break;
+        //        case QuestionType.Text:
+        //            if (string.IsNullOrWhiteSpace(submission.TextResponse))
+        //            {
+        //                return BadRequest("TextResponse is required for Text questions.");
+        //            }
+        //            break;
 
-                default:
-                    return BadRequest("Invalid question type.");
-            }
+        //        default:
+        //            return BadRequest("Invalid question type.");
+        //    }
 
-            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
-            // var connectionSQl = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
-            using (var connection = new SqlConnection(connectionString))
-            {
-                await connection.OpenAsync();
+        //    var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+        //    // var connectionSQl = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+        //    using (var connection = new SqlConnection(connectionString))
+        //    {
+        //        await connection.OpenAsync();
 
-                // Get the UserId by email or create a new user if necessary
-                var userId = await GetOrCreateUserId(submission.UserEmail, connection);
+        //        // Get the UserId by email or create a new user if necessary
+        //        var userId = await GetOrCreateUserId(submission.UserEmail, connection);
 
-                // Insert the response
-                var query = @"INSERT INTO Responses (SurveyId, QuestionId, AnswerId, TextResponse, UserId)
-                      VALUES (@SurveyId, @QuestionId, @AnswerId, @TextResponse, @UserId)";
+        //        // Insert the response
+        //        var query = @"INSERT INTO Responses (SurveyId, QuestionId, AnswerId, TextResponse, UserId)
+        //              VALUES (@SurveyId, @QuestionId, @AnswerId, @TextResponse, @UserId)";
 
-                await connection.ExecuteAsync(query, new
-                {
-                    SurveyId = submission.SurveyId,
-                    QuestionId = submission.QuestionId,
-                    AnswerId = submission.AnswerId,
-                    TextResponse = submission.TextResponse,
-                    UserId = userId
-                });
-            }
+        //        await connection.ExecuteAsync(query, new
+        //        {
+        //            SurveyId = submission.SurveyId,
+        //            QuestionId = submission.QuestionId,
+        //            AnswerId = submission.AnswerId,
+        //            TextResponse = submission.TextResponse,
+        //            UserId = userId
+        //        });
+        //    }
 
-            return Ok("Answer submitted successfully.");
-        }
+        //    return Ok("Answer submitted successfully.");
+        //}
 
         private async Task<int> GetOrCreateUserId(string email, SqlConnection connection)
         {
