@@ -7,6 +7,7 @@ using Microsoft.Extensions.Primitives;
 using System.Text.Json;
 using TownsApi.Data;
 using TownsApi.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TownsApi.Controllers
 {
@@ -114,6 +115,180 @@ namespace TownsApi.Controllers
             List<SurveryDetails> surveryDetails = new List<SurveryDetails>();
 
             return surveys;
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SubmitSurveyAnswersAsync(int userId, List<SurveryDetails> responses)
+        {
+            const string query = @"
+        INSERT INTO Responses (SurveyId, QuestionId, UserId, AnswerId, TextResponse)
+        VALUES (@SurveyId, @QuestionId, @UserId, @AnswerId, @TextResponse);
+    ";
+            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                foreach (var response in responses)
+                {
+                    // Validate QuestionType and determine how to store the response
+                    if (response.QuestionType == QuestionType.MultipleChoice || response.QuestionType == QuestionType.Dropdown)
+                    {
+                        if (response.AnswerId == null)
+                        {
+                            throw new ArgumentException($"AnswerId is required for question {response.QuestionId}.");
+                        }
+                    }
+                    else if (response.QuestionType == QuestionType.Text)
+                    {
+                        if (string.IsNullOrWhiteSpace(response.ResponseText))
+                        {
+                            throw new ArgumentException($"ResponseText is required for question {response.QuestionId}.");
+                        }
+                    }
+
+                    // Insert the response into the database
+                    await connection.ExecuteAsync(query, new
+                    {
+                        SurveyId = response.SurveyId,
+                        QuestionId = response.QuestionId,
+                        UserId = userId,
+                        AnswerId = response.QuestionType == QuestionType.Text ? null : response.AnswerId,
+                        TextResponse = response.QuestionType == QuestionType.Text ? response.ResponseText : null
+                    });
+                }
+            }
+
+            ResultObject patResult1 = new ResultObject
+            {
+                Status = true,
+                StatusCode = StatusCodes.Status200OK,
+                token = null,
+                Message = "Data Found",
+                data = null
+            };
+            return Ok(patResult1);
+        }
+
+      
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetOrCreateUser([FromBody] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return BadRequest("Email is required.");
+
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Check if the user exists
+                    const string getUserQuery = "SELECT Id, Username, Email FROM Users WHERE Email = @Email";
+                    var existingUser = await connection.QueryFirstOrDefaultAsync<User>(getUserQuery, new { Email = email });
+
+                    if (existingUser != null)
+                    {
+                        return Ok(existingUser); // Return the existing user
+                    }
+
+                    // Create a new user
+                    const string insertUserQuery = @"
+                    INSERT INTO Users (Username, Email)
+                    OUTPUT INSERTED.*
+                    VALUES (@Username, @Email)";
+
+                    var newUser = await connection.QuerySingleAsync<User>(insertUserQuery, new
+                    {
+                        Username = email.Split('@')[0], // Derive username from email
+                        Email = email
+                    });
+
+                    return Ok(newUser); // Return the newly created user
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitSurveyResponses([FromBody] List<SurveyResponse> responses)
+        {
+            if (responses == null || !responses.Any())
+            {
+                return BadRequest("No responses provided.");
+            }
+
+            // Validate SurveyId consistency
+            var surveyId = responses.First().SurveyId;
+            if (responses.Any(r => r.SurveyId != surveyId))
+            {
+                return BadRequest("All responses must belong to the same survey.");
+            }
+
+            const string query = @"
+        INSERT INTO UserSurveyResponse (SurveyId, QuestionId, AnswerId, TextResponse, UserId)
+        VALUES (@SurveyId, @QuestionId, @AnswerId, @TextResponse, @UserId);
+    ";
+            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using (var connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (var response in responses)
+                        {
+                            // Validate QuestionType and corresponding data
+                            if (response.QuestionType == 1 || response.QuestionType == 3) // MultipleChoice or Dropdown
+                            {
+                                if (response.AnswerId == null)
+                                {
+                                    return BadRequest($"AnswerId is required for question {response.QuestionId}.");
+                                }
+                            }
+                            else if (response.QuestionType == 2) // Text
+                            {
+                                if (string.IsNullOrWhiteSpace(response.TextResponse))
+                                {
+                                    return BadRequest($"TextResponse is required for question {response.QuestionId}.");
+                                }
+                            }
+
+                            // Insert the response into the database
+                            await connection.ExecuteAsync(query, new
+                            {
+                                SurveyId = response.SurveyId,
+                                QuestionId = response.QuestionId,
+                                AnswerId = response.AnswerId,
+                                TextResponse = response.TextResponse,
+                                UserId = response.UserId
+                            }, transaction);
+                        }
+
+                        transaction.Commit();
+                        return Ok("Responses submitted successfully.");
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        return StatusCode(500, $"Internal server error: {ex.Message}");
+                    }
+                }
+            }
         }
 
 
