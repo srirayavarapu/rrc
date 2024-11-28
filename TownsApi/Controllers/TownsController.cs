@@ -355,6 +355,151 @@ namespace TownsApi.Controllers
             }
         }
 
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> CreateCompany([FromBody] Company company)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            await connection.ExecuteAsync("INSERT INTO Companies (Name) VALUES (@Name)", company);
+            return Ok("Company created successfully.");
+        }
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> AssignAdminToCompany(int adminId, int companyId)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+
+            // Check if Admin exists
+            var adminExists = await connection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(1) FROM Admins WHERE Id = @AdminId",
+                new { AdminId = adminId });
+            if (adminExists == 0) return NotFound("Admin does not exist.");
+
+            // Check if Company exists
+            var companyExists = await connection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(1) FROM Companies WHERE Id = @CompanyId",
+                new { CompanyId = companyId });
+            if (companyExists == 0) return NotFound("Company does not exist.");
+
+            // Assign Admin to Company
+            await connection.ExecuteAsync(@"
+        UPDATE Admins
+        SET CompanyId = @CompanyId
+        WHERE Id = @AdminId", new { AdminId = adminId, CompanyId = companyId });
+
+            return Ok("Admin assigned to company successfully.");
+        }
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetCompanies()
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            var companies = await connection.QueryAsync(@"
+        SELECT c.Id AS CompanyId, c.Name AS CompanyName, 
+               a.Id AS AdminId, a.Name AS AdminName, a.Email AS AdminEmail
+        FROM Companies c
+        LEFT JOIN Admins a ON c.Id = a.CompanyId");
+
+            return Ok(companies);
+        }
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetUnassignedAdmins()
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            var unassignedAdmins = await connection.QueryAsync<Admin>(
+                "SELECT * FROM Admins WHERE CompanyId IS NULL");
+            return Ok(unassignedAdmins);
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> CreateAdmin([FromBody] Admin admin)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            await connection.ExecuteAsync(@"
+        INSERT INTO Admins (Name, Email, Password) 
+        VALUES (@Name, @Email, @Password)", admin);
+            return Ok("Admin created successfully.");
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> SuperAdminLogin([FromBody] SuperAdmin login)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            var superAdmin = await connection.QueryFirstOrDefaultAsync<SuperAdmin>(
+                "SELECT * FROM SuperAdmins WHERE Email = @Email AND Password = @Password", login);
+
+            if (superAdmin == null)
+            {
+                return Unauthorized("Invalid credentials.");
+            }
+
+            return Ok(new { superAdmin.Id, superAdmin.Name });
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UserLogin([FromBody] string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return BadRequest("Email is required.");
+
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Check if the user exists
+                    const string getUserQuery = "SELECT Id, Username, Email FROM Users WHERE Email = @Email";
+                    var existingUser = await connection.QueryFirstOrDefaultAsync<User>(getUserQuery, new { Email = email });
+
+                    if (existingUser != null)
+                    {
+                        return Ok(existingUser); // Return the existing user
+                    }
+
+                    // Create a new user
+                    const string insertUserQuery = @"
+                    INSERT INTO Users (Username, Email)
+                    OUTPUT INSERTED.*
+                    VALUES (@Username, @Email)";
+
+                    var newUser = await connection.QuerySingleAsync<User>(insertUserQuery, new
+                    {
+                        Username = email.Split('@')[0], // Derive username from email
+                        Email = email
+                    });
+                    ResultObject patResult1 = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status200OK,
+                        token = null,
+                        Message = "Responses submitted successfully.",
+                        data = newUser
+                    };
+                    return Ok(patResult1);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
