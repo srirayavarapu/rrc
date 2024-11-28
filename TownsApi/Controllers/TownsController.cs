@@ -116,59 +116,59 @@ namespace TownsApi.Controllers
             return surveys;
         }
 
-    //    [HttpPost("/rrc/api/[controller]/[action]")]
-    //    [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
-    //    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    //    public async Task<IActionResult> SubmitSurveyAnswersAsync(int userId, List<SurveryDetails> responses)
-    //    {
-    //        const string query = @"
-    //    INSERT INTO Responses (SurveyId, QuestionId, UserId, AnswerId, TextResponse)
-    //    VALUES (@SurveyId, @QuestionId, @UserId, @AnswerId, @TextResponse);
-    //";
-    //        var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+        //    [HttpPost("/rrc/api/[controller]/[action]")]
+        //    [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        //    [ProducesResponseType(StatusCodes.Status404NotFound)]
+        //    public async Task<IActionResult> SubmitSurveyAnswersAsync(int userId, List<SurveryDetails> responses)
+        //    {
+        //        const string query = @"
+        //    INSERT INTO Responses (SurveyId, QuestionId, UserId, AnswerId, TextResponse)
+        //    VALUES (@SurveyId, @QuestionId, @UserId, @AnswerId, @TextResponse);
+        //";
+        //        var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
 
-    //        using (var connection = new SqlConnection(connectionString))
-    //        {
-    //            foreach (var response in responses)
-    //            {
-    //                // Validate QuestionType and determine how to store the response
-    //                if (response.QuestionType == QuestionType.MultipleChoice || response.QuestionType == QuestionType.Dropdown)
-    //                {
-    //                    if (response.AnswerId == null)
-    //                    {
-    //                        throw new ArgumentException($"AnswerId is required for question {response.QuestionId}.");
-    //                    }
-    //                }
-    //                else if (response.QuestionType == QuestionType.Text)
-    //                {
-    //                    if (string.IsNullOrWhiteSpace(response.ResponseText))
-    //                    {
-    //                        throw new ArgumentException($"ResponseText is required for question {response.QuestionId}.");
-    //                    }
-    //                }
+        //        using (var connection = new SqlConnection(connectionString))
+        //        {
+        //            foreach (var response in responses)
+        //            {
+        //                // Validate QuestionType and determine how to store the response
+        //                if (response.QuestionType == QuestionType.MultipleChoice || response.QuestionType == QuestionType.Dropdown)
+        //                {
+        //                    if (response.AnswerId == null)
+        //                    {
+        //                        throw new ArgumentException($"AnswerId is required for question {response.QuestionId}.");
+        //                    }
+        //                }
+        //                else if (response.QuestionType == QuestionType.Text)
+        //                {
+        //                    if (string.IsNullOrWhiteSpace(response.ResponseText))
+        //                    {
+        //                        throw new ArgumentException($"ResponseText is required for question {response.QuestionId}.");
+        //                    }
+        //                }
 
-    //                // Insert the response into the database
-    //                await connection.ExecuteAsync(query, new
-    //                {
-    //                    SurveyId = response.SurveyId,
-    //                    QuestionId = response.QuestionId,
-    //                    UserId = userId,
-    //                    AnswerId = response.QuestionType == QuestionType.Text ? null : response.AnswerId,
-    //                    TextResponse = response.QuestionType == QuestionType.Text ? response.ResponseText : null
-    //                });
-    //            }
-    //        }
+        //                // Insert the response into the database
+        //                await connection.ExecuteAsync(query, new
+        //                {
+        //                    SurveyId = response.SurveyId,
+        //                    QuestionId = response.QuestionId,
+        //                    UserId = userId,
+        //                    AnswerId = response.QuestionType == QuestionType.Text ? null : response.AnswerId,
+        //                    TextResponse = response.QuestionType == QuestionType.Text ? response.ResponseText : null
+        //                });
+        //            }
+        //        }
 
-    //        ResultObject patResult1 = new ResultObject
-    //        {
-    //            Status = true,
-    //            StatusCode = StatusCodes.Status200OK,
-    //            token = null,
-    //            Message = "Data Found",
-    //            data = null
-    //        };
-    //        return Ok(patResult1);
-    //    }
+        //        ResultObject patResult1 = new ResultObject
+        //        {
+        //            Status = true,
+        //            StatusCode = StatusCodes.Status200OK,
+        //            token = null,
+        //            Message = "Data Found",
+        //            data = null
+        //        };
+        //        return Ok(patResult1);
+        //    }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
@@ -182,7 +182,7 @@ namespace TownsApi.Controllers
 
             try
             {
-                    var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
 
                 using var connection = new SqlConnection(_connectionString);
                 await connection.OpenAsync();
@@ -599,6 +599,59 @@ namespace TownsApi.Controllers
                 return Ok(patResult1);
             }
         }
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetSurveyResponses()
+        {
+            try
+            {
+                var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                var query = @"
+            SELECT 
+                sr.UserId,
+                u.Username AS UserName,
+                s.Id AS SurveyId,
+                s.Title AS SurveyTitle,
+                q.Text AS QuestionText,
+                r.TextResponse AS ResponseText,
+                a.Text AS AnswerText
+            FROM SurveyResponsesInfo sr
+            INNER JOIN Users u ON sr.UserId = u.Id
+            INNER JOIN Surveys s ON sr.SurveyId = s.Id
+            INNER JOIN Questions q ON sr.QuestionId = q.Id
+            LEFT JOIN Answers a ON sr.AnswerId = a.Id
+            LEFT JOIN Responses r ON sr.Id = r.Id
+            ORDER BY sr.UserId;
+        ";
+
+                var responses = await connection.QueryAsync<SurveyResponseDto>(query);
+
+                // Group responses by User and Survey
+                var groupedResponses = responses
+                    .GroupBy(r => new { r.UserId, r.UserName, r.SurveyId, r.SurveyTitle })
+                    .Select(group => new
+                    {
+                        group.Key.UserId,
+                        group.Key.UserName,
+                        group.Key.SurveyId,
+                        group.Key.SurveyTitle,
+                        Answers = group.Select(r => new
+                        {
+                            Question = r.QuestionText,
+                            Response = r.AnswerText ?? r.ResponseText
+                        })
+                    });
+
+                return Ok(groupedResponses);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
 
 
         //[HttpPost("/rrc/api/[controller]/[action]")]
@@ -695,6 +748,200 @@ namespace TownsApi.Controllers
                 var connectionString = _connectionStringProvider.GetConnectionString("RRC");
                 var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
                 var data = await connection.QueryAsync<OP_Employee>("select * from RRC..OP_Employee where nuser='" + username + "' and password='" + password + "'");
+
+                if (data.Count() <= 0)
+                {
+
+                    ResultObject patResult = new ResultObject
+                    {
+                        Status = false,
+                        StatusCode = StatusCodes.Status401Unauthorized,
+                        token = null,
+                        Message = "User Name OR Password Does not Exists",
+                        data = null
+                    };
+                    return Ok(patResult);
+                }
+
+
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = data
+                };
+                return Ok(patResult1);
+
+            }
+            catch (Exception ex)
+            {
+                ResultObject patResult = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status422UnprocessableEntity,
+                    token = null,
+                    Message = ex.StackTrace,
+                    data = null
+                };
+                return Ok(patResult);
+            }
+
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> SubmitSurvey([FromBody] SurveySubmissionRequest request)
+        {
+            if (request == null || request.Questions == null || !request.Questions.Any())
+            {
+                return BadRequest("Invalid survey submission payload.");
+            }
+
+            try
+            {
+                var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+
+                // Check if the SurveyId exists in the Surveys table
+                var surveyExists = await connection.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(1) FROM Surveys WHERE Id = @SurveyId",
+                    new { SurveyId = request.SurveyId });
+
+                if (surveyExists == 0)
+                {
+                    return NotFound($"Survey with Id {request.SurveyId} does not exist.");
+                }
+
+                // Check if all QuestionIds exist for the given SurveyId
+                var validQuestions = await connection.QueryAsync<int>(
+                    "SELECT Id FROM Questions WHERE SurveyId = @SurveyId",
+                    new { SurveyId = request.SurveyId });
+
+                var validQuestionIds = validQuestions.ToHashSet();
+                foreach (var question in request.Questions)
+                {
+                    if (!validQuestionIds.Contains(question.QuestionId))
+                    {
+                        return NotFound($"Question with Id {question.QuestionId} does not exist in Survey {request.SurveyId}.");
+                    }
+                }
+
+                // Insert the survey response for each question
+                foreach (var question in request.Questions)
+                {
+                    string insertQuery = question.QuestionType switch
+                    {
+                        1 or 3 or 4 => @"
+                    INSERT INTO SurveyResponsesInfo (SurveyId, UserId, QuestionId, AnswerId)
+                    VALUES (@SurveyId, @UserId, @QuestionId, @AnswerId);",
+                        2 => @"
+                    INSERT INTO SurveyResponsesInfo (SurveyId, UserId, QuestionId, TextResponse)
+                    VALUES (@SurveyId, @UserId, @QuestionId, @TextResponse);",
+                        _ => throw new Exception("Unsupported question type.")
+                    };
+
+                    var parameters = new DynamicParameters();
+                    parameters.Add("SurveyId", request.SurveyId);
+                    parameters.Add("UserId", request.UserId);
+                    parameters.Add("QuestionId", question.QuestionId);
+
+                    if (question.QuestionType == 2)  // Text Response
+                    {
+                        parameters.Add("TextResponse", question.QuestionAnswer);
+                    }
+                    else
+                    {
+                        // Parse comma-separated answer IDs for Multiple Choice, Dropdown, or Radio
+                        var answerIds = question.QuestionAnswer.Split(',');
+                        foreach (var answerId in answerIds)
+                        {
+                            parameters.Add("AnswerId", int.Parse(answerId));
+                            await connection.ExecuteAsync(insertQuery, parameters);
+                        }
+                    }
+                }
+
+                return Ok("Survey submitted successfully.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        //[HttpPost("/rrc/api/[controller]/[action]")]
+        //public async Task<IActionResult> SubmitSurvey([FromBody] SurveySubmissionRequest request)
+        //{
+        //    if (request == null || request.Questions == null || !request.Questions.Any())
+        //    {
+        //        return BadRequest("Invalid survey submission payload.");
+        //    }
+
+        //    try
+        //    {
+        //        var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+        //        using var connection = new SqlConnection(connectionString);
+        //        await connection.OpenAsync();
+
+        //        // Insert the survey response for each question
+        //        foreach (var question in request.Questions)
+        //        {
+        //            string insertQuery = question.QuestionType switch
+        //            {
+        //                1 or 3 or 4 => @"
+        //            INSERT INTO SurveyResponsesInfo (SurveyId, UserId, QuestionId, AnswerId)
+        //            VALUES (@SurveyId, @UserId, @QuestionId, @AnswerId);",
+        //                2 => @"
+        //            INSERT INTO SurveyResponsesInfo (SurveyId, UserId, QuestionId, TextResponse)
+        //            VALUES (@SurveyId, @UserId, @QuestionId, @TextResponse);",
+        //                _ => throw new Exception("Unsupported question type.")
+        //            };
+
+        //            var parameters = new DynamicParameters();
+        //            parameters.Add("SurveyId", request.SurveyId);
+        //            parameters.Add("UserId", request.UserId);
+        //            parameters.Add("QuestionId", question.QuestionId);
+
+        //            if (question.QuestionType == 2)
+        //            {
+        //                parameters.Add("TextResponse", question.QuestionAnswer);
+        //            }
+        //            else
+        //            {
+        //                // Parse comma-separated answer IDs for Multiple Choice
+        //                var answerIds = question.QuestionAnswer.Split(',');
+        //                foreach (var answerId in answerIds)
+        //                {
+        //                    parameters.Add("AnswerId", int.Parse(answerId));
+        //                    await connection.ExecuteAsync(insertQuery, parameters);
+        //                }
+        //            }
+        //        }
+
+        //        return Ok("Survey submitted successfully.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Internal server error: {ex.Message}");
+        //    }
+        //}
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> AdminLoginEmployee(string username, string password)
+        {
+            try
+            {
+                var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+                var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+                var data = await connection.QueryAsync<Op_Employee_Survey>("select * from RRC_Test..Op_Employee_Survey where Username='" + username + "' and Password='" + password + "' and Level='ADMIN'");
+
                 if (data.Count() <= 0)
                 {
 
