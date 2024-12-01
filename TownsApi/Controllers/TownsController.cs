@@ -24,6 +24,8 @@ namespace TownsApi.Controllers
             _connectionStringProvider = connectionStringProvider;
         }
 
+
+
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -407,6 +409,19 @@ namespace TownsApi.Controllers
         }
 
         [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetSurveys(int empid)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            var companies = await connection.QueryAsync(@"
+         select *  from Surveys where CreatedBy='"+empid+"'");
+
+            return Ok(companies);
+        }
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> GetUnassignedAdmins()
         {
             var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
@@ -428,6 +443,55 @@ namespace TownsApi.Controllers
         VALUES (@Name, @Email, @Password)", admin);
             return Ok("Admin created successfully.");
         }
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetEmployees()
+        {
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // Query the Employees table
+                var employees = await connection.QueryAsync<Employee>("SELECT * FROM Employees");
+
+                // Return the list of employees
+                return Ok(employees);
+            }
+            catch (Exception ex)
+            {
+                // Return a 500 Internal Server Error if something goes wrong
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> AssignSurvey([FromBody] SurveyAssignment assignment)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            await connection.ExecuteAsync(@"
+        INSERT INTO SurveyAssignments (SurveyId, EmployeeId) 
+        VALUES (@SurveyId, @EmployeeId)", assignment);
+            return Ok("Survey assigned successfully.");
+        }
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> CreateEmployee([FromBody] Employee employee)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+
+            await connection.ExecuteAsync(@"
+        INSERT INTO Employees (Name, Email, Password, CompanyId) 
+        VALUES (@Name, @Email, @Password, @CompanyId)", employee);
+
+            return Ok("Employee created successfully.");
+        }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> SuperAdminLogin([FromBody] SuperAdmin login)
@@ -444,6 +508,23 @@ namespace TownsApi.Controllers
             }
 
             return Ok(new { superAdmin.Id, superAdmin.Name });
+        }
+
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> AdminLogin([FromBody] Admin login)
+        {
+            var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+            using var connection = new SqlConnection(_connectionString);
+            var superAdmin = await connection.QueryFirstOrDefaultAsync<Admin>(
+                "SELECT * FROM Admins WHERE Email = @Email AND Password = @Password", login);
+
+            if (superAdmin == null)
+            {
+                return Unauthorized("Invalid credentials.");
+            }
+
+            return Ok(new { superAdmin.Id, superAdmin.Name,superAdmin.CompanyId });
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
@@ -755,21 +836,21 @@ namespace TownsApi.Controllers
                 await connection.OpenAsync();
 
                 var query = @"
-            SELECT 
-                sr.UserId,
-                u.Username AS UserName,
-                s.Id AS SurveyId,
-                s.Title AS SurveyTitle,
-                q.Text AS QuestionText,
-                r.TextResponse AS ResponseText,
-                a.Text AS AnswerText
-            FROM SurveyResponsesInfo sr
-            INNER JOIN Users u ON sr.UserId = u.Id
-            INNER JOIN Surveys s ON sr.SurveyId = s.Id
-            INNER JOIN Questions q ON sr.QuestionId = q.Id
-            LEFT JOIN Answers a ON sr.AnswerId = a.Id
-            LEFT JOIN Responses r ON sr.Id = r.Id
-            ORDER BY sr.UserId;
+           SELECT 
+     sr.UserId,
+     u.Name AS UserName,
+     s.Id AS SurveyId,
+     s.Title AS SurveyTitle,
+     q.Text AS QuestionText,
+     r.TextResponse AS ResponseText,
+     a.Text AS AnswerText
+ FROM SurveyResponsesInfo sr
+ INNER JOIN Employees u ON sr.UserId = u.Id
+ INNER JOIN Surveys s ON sr.SurveyId = s.Id
+ INNER JOIN Questions q ON sr.QuestionId = q.Id
+ LEFT JOIN Answers a ON sr.AnswerId = a.Id
+ LEFT JOIN Responses r ON sr.Id = r.Id
+ ORDER BY sr.UserId;
         ";
 
                 var responses = await connection.QueryAsync<SurveyResponseDto>(query);
