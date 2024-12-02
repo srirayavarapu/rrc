@@ -23,6 +23,73 @@ namespace TownsApi.Controllers
             _context = context;
             _connectionStringProvider = connectionStringProvider;
         }
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetSurveysByUser(int empid)
+        {
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // Fetch all surveys created by the specified user
+                const string surveysQuery = @"
+        SELECT Id, Title, Description, CreatedBy
+        FROM Surveys
+        WHERE CreatedBy = @CreatedBy;
+        ";
+
+                var surveys = (await connection.QueryAsync<Survey>(surveysQuery, new { CreatedBy = empid })).ToList();
+
+                if (!surveys.Any())
+                {
+                    return NotFound($"No surveys found for user with ID {empid}.");
+                }
+
+                // Fetch all questions for the retrieved surveys
+                var surveyIds = surveys.Select(s => s.Id).ToArray();
+
+                const string questionsQuery = @"
+        SELECT Id, Text, Type, SurveyId
+        FROM Questions
+        WHERE SurveyId IN @SurveyIds;
+        ";
+
+                var questions = (await connection.QueryAsync<Question>(questionsQuery, new { SurveyIds = surveyIds })).ToList();
+
+                // Fetch all answers for the retrieved questions
+                var questionIds = questions.Select(q => q.Id).ToArray();
+
+                const string answersQuery = @"
+        SELECT Id, Text, QuestionId
+        FROM Answers
+        WHERE QuestionId IN @QuestionIds;
+        ";
+
+                var answers = (await connection.QueryAsync<Answer>(answersQuery, new { QuestionIds = questionIds })).ToList();
+
+                // Map questions and answers to their respective surveys
+                foreach (var survey in surveys)
+                {
+                    var surveyQuestions = questions.Where(q => q.SurveyId == survey.Id).ToList();
+
+                    foreach (var question in surveyQuestions)
+                    {
+                        question.Answers = answers.Where(a => a.QuestionId == question.Id).ToList();
+                    }
+
+                    survey.Questions = surveyQuestions;
+                }
+
+                return Ok(surveys);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
 
 
@@ -415,9 +482,10 @@ namespace TownsApi.Controllers
 
             using var connection = new SqlConnection(_connectionString);
             var companies = await connection.QueryAsync(@"
-         select *  from Surveys where CreatedBy='"+empid+"'");
+         select *  from Surveys where CreatedBy='" + empid + "'");
 
             return Ok(companies);
+
         }
 
 
@@ -524,7 +592,7 @@ namespace TownsApi.Controllers
                 return Unauthorized("Invalid credentials.");
             }
 
-            return Ok(new { superAdmin.Id, superAdmin.Name,superAdmin.CompanyId });
+            return Ok(new { superAdmin.Id, superAdmin.Name, superAdmin.CompanyId });
         }
 
         [HttpPost("/rrc/api/[controller]/[action]")]
