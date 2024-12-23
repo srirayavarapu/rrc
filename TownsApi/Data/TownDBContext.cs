@@ -29,5 +29,7 @@ namespace TownsApi.Data
         //public DbSet<ResponsesData> ResponsesData { get; set; }
         //public DbSet<ChoicesData> ChoicesData { get; set; }
         public DbSet<OP_Security_Points> OP_Security_Points { get; set; }
+        public DbSet<SurveyResponsesInfo> SurveyResponsesInfo { get; set; }
+
     }
 }

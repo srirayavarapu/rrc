@@ -7,6 +7,7 @@ using Microsoft.Extensions.Primitives;
 using System.Text.Json;
 using TownsApi.Data;
 using TownsApi.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TownsApi.Controllers
 {
@@ -25,6 +26,75 @@ namespace TownsApi.Controllers
         }
         [HttpGet("/rrc/api/[controller]/[action]")]
         public async Task<IActionResult> GetSurveysByUser(int empid)
+        {
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+
+                using var connection = new SqlConnection(_connectionString);
+                await connection.OpenAsync();
+
+                // Fetch all surveys created by the specified user
+                const string surveysQuery = @"
+        SELECT Id, Title, Description, CreatedBy
+        FROM Surveys
+        WHERE CreatedBy = @CreatedBy;
+        ";
+
+                var surveys = (await connection.QueryAsync<Survey>(surveysQuery, new { CreatedBy = empid })).ToList();
+
+                if (!surveys.Any())
+                {
+                    return NotFound($"No surveys found for user with ID {empid}.");
+                }
+
+                // Fetch all questions for the retrieved surveys
+                var surveyIds = surveys.Select(s => s.Id).ToArray();
+
+                const string questionsQuery = @"
+        SELECT Id, Text, Type, SurveyId
+        FROM Questions
+        WHERE SurveyId IN @SurveyIds;
+        ";
+
+                var questions = (await connection.QueryAsync<Question>(questionsQuery, new { SurveyIds = surveyIds })).ToList();
+
+                // Fetch all answers for the retrieved questions
+                var questionIds = questions.Select(q => q.Id).ToArray();
+
+                const string answersQuery = @"
+        SELECT Id, Text, QuestionId
+        FROM Answers
+        WHERE QuestionId IN @QuestionIds;
+        ";
+
+                var answers = (await connection.QueryAsync<Answer>(answersQuery, new { QuestionIds = questionIds })).ToList();
+
+                // Map questions and answers to their respective surveys
+                foreach (var survey in surveys)
+                {
+                    var surveyQuestions = questions.Where(q => q.SurveyId == survey.Id).ToList();
+
+                    foreach (var question in surveyQuestions)
+                    {
+                        question.Answers = answers.Where(a => a.QuestionId == question.Id).ToList();
+                    }
+
+                    survey.Questions = surveyQuestions;
+                }
+
+                return Ok(surveys);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        public async Task<IActionResult> GetSurveysByUserInfo(int empid, int SurveyId)
         {
             try
             {
@@ -649,6 +719,314 @@ namespace TownsApi.Controllers
             }
         }
 
+        [HttpPost("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SurveyUserLogin([FromBody] SurveyUser email)
+        {
+            if (string.IsNullOrEmpty(email?.UserEmail))
+                return BadRequest("Email is required.");
+
+            try
+            {
+                var _connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+                _context = DbContextFactory.Create(_connectionString);
+                using (var connection = new SqlConnection(_connectionString))
+                {
+                    await connection.OpenAsync();
+
+                    // Check if the user exists
+                    const string getUserQuery = "SELECT Id, Username, Email FROM Users WHERE Email = @Email";
+                    var existingUser = await connection.QueryFirstOrDefaultAsync<User>(getUserQuery, new { Email = email?.UserEmail });
+                  
+
+                    if (existingUser != null)
+                    {
+                        try
+                        {
+                            var answeredQuestions = _context.SurveyResponsesInfo
+                               .Where(sr => sr.SurveyId == email.SurveyId && sr.UserId == existingUser.Id)
+                               .Select(sr => sr.QuestionId)
+                               .Distinct()
+                               .Count();
+
+                            bool isCompleted = false;
+                            if (answeredQuestions > 0)
+                            {
+                                isCompleted = true;
+                                ResultObject patResult11 = new ResultObject
+                                {
+                                    Status = true,
+                                    StatusCode = StatusCodes.Status200OK,
+                                    token = null,
+                                    Message = "Survery Completed Already",
+                                    data = existingUser
+                                };
+                                return Ok(patResult11);
+                            }
+                            else
+                            {
+                                var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId,s.CreatedBy AS CreatedBy, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
+                                var surveys = new List<Survey>();
+
+                                foreach (var row in data)
+                                {
+                                    // Find or create Survey
+                                    var survey = surveys.FirstOrDefault(s => s.Id == row.SurveyId);
+                                    if (survey == null)
+                                    {
+                                        survey = new Survey
+                                        {
+                                            Id = row.SurveyId,
+                                            Title = row.SurveyTitle,
+                                            Description = row.SurveyDescription,
+                                            CreatedBy = row.CreatedBy
+                                        };
+                                        surveys.Add(survey);
+                                    }
+
+                                    // Find or create Question
+                                    if (row.QuestionId.HasValue)
+                                    {
+                                        if (survey.Questions == null)
+                                        {
+                                            survey.Questions = new List<Question>();
+                                        }
+                                        var question = survey.Questions?.FirstOrDefault(q => q.Id == row.QuestionId);
+                                        if (question == null)
+                                        {
+                                            question = new Question
+                                            {
+                                                Id = row.QuestionId.Value,
+                                                Text = row.QuestionText,
+                                                Type = row.QuestionType.HasValue ? (QuestionType)row.QuestionType.Value : default
+                                            };
+                                            survey.Questions.Add(question);
+                                        }
+
+                                        // Find or create Answer
+                                        if (row.AnswerId.HasValue)
+                                        {
+                                            if (question.Answers == null)
+                                            {
+                                                question.Answers = new List<Answer>();
+                                            }
+                                            if (!question.Answers.Any(a => a.Id == row.AnswerId))
+                                            {
+                                                question.Answers.Add(new Answer
+                                                {
+                                                    Id = row.AnswerId.Value,
+                                                    Text = row.AnswerText
+                                                });
+                                            }
+                                        }
+
+                                        // Find or create Response
+                                        if (row.ResponseId.HasValue)
+                                        {
+                                            if (question.Responses == null)
+                                            {
+                                                question.Responses = new List<Models.Response>();
+                                            }
+                                            if (!question.Responses.Any(r => r.Id == row.ResponseId))
+                                            {
+                                                question.Responses.Add(new Models.Response
+                                                {
+                                                    Id = row.ResponseId.Value,
+                                                    TextResponse = row.ResponseText,
+                                                    User = row.UserId.HasValue ? new User
+                                                    {
+                                                        Id = row.UserId.Value,
+                                                        Username = row.Username,
+                                                        Email = row.UserEmail
+                                                    } : null
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (surveys.Count > 0)
+                                {
+                                    {
+                                        surveys = surveys.Where(x => x.Id == email.SurveyId).ToList();
+                                    }
+                                    existingUser.Surveys = surveys;
+                                    ResultObject patResult13 = new ResultObject
+                                    {
+                                        Status = true,
+                                        StatusCode = StatusCodes.Status200OK,
+                                        token = null,
+                                        Message = "success",
+                                        data = existingUser
+                                    };
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                        return Ok(existingUser); // Return the existing user
+                    }
+
+                    // Create a new user
+                    const string insertUserQuery = @"
+                    INSERT INTO Users (Username, Email)
+                    OUTPUT INSERTED.*
+                    VALUES (@Username, @Email)";
+
+                    var newUser = await connection.QuerySingleAsync<User>(insertUserQuery, new
+                    {
+                        Username = email?.UserEmail.Split('@')[0], // Derive username from email
+                        Email = email?.UserEmail
+                    });
+                    if (newUser != null)
+
+                    {
+                        try
+                        {
+
+                            var answeredQuestions = _context.SurveyResponsesInfo
+                               .Where(sr => sr.SurveyId == email.SurveyId && sr.UserId == newUser.Id)
+                               .Select(sr => sr.QuestionId)
+                               .Distinct()
+                               .Count();
+
+                            bool isCompleted = false;
+                            if (answeredQuestions > 0)
+                            {
+                                isCompleted = true;
+                                ResultObject patResult11 = new ResultObject
+                                {
+                                    Status = true,
+                                    StatusCode = StatusCodes.Status200OK,
+                                    token = null,
+                                    Message = "Survery Completed Already",
+                                    data = newUser
+                                };
+                            }
+                            else
+                            {
+                                var data = await connection.QueryAsync<SurveryDetails>("SELECT s.Id AS SurveyId,s.CreatedBy AS CreatedBy, s.Title AS SurveyTitle, s.Description AS SurveyDescription, q.Id AS QuestionId, q.Text AS QuestionText,q.Type AS QuestionType, a.Id AS AnswerId, a.Text AS AnswerText,r.Id AS ResponseId, r.TextResponse AS ResponseText, u.Id AS UserId,u.Username AS Username, u.Email AS UserEmail FROM Surveys s LEFT JOIN Questions q ON s.Id = q.SurveyId LEFT JOIN Answers a ON q.Id = a.QuestionId LEFT JOIN Responses r ON(a.Id = r.AnswerId OR q.Id = r.Id) LEFT JOIN Users u ON r.UserId = u.Id ORDER BY s.Id, q.Id, a.Id, r.Id; ");
+                                var surveys = new List<Survey>();
+
+                                foreach (var row in data)
+                                {
+                                    // Find or create Survey
+                                    var survey = surveys.FirstOrDefault(s => s.Id == row.SurveyId);
+                                    if (survey == null)
+                                    {
+                                        survey = new Survey
+                                        {
+                                            Id = row.SurveyId,
+                                            Title = row.SurveyTitle,
+                                            Description = row.SurveyDescription,
+                                            CreatedBy = row.CreatedBy
+                                        };
+                                        surveys.Add(survey);
+                                    }
+
+                                    // Find or create Question
+                                    if (row.QuestionId.HasValue)
+                                    {
+                                        if (survey.Questions == null)
+                                        {
+                                            survey.Questions = new List<Question>();
+                                        }
+                                        var question = survey.Questions?.FirstOrDefault(q => q.Id == row.QuestionId);
+                                        if (question == null)
+                                        {
+                                            question = new Question
+                                            {
+                                                Id = row.QuestionId.Value,
+                                                Text = row.QuestionText,
+                                                Type = row.QuestionType.HasValue ? (QuestionType)row.QuestionType.Value : default
+                                            };
+                                            survey.Questions.Add(question);
+                                        }
+
+                                        // Find or create Answer
+                                        if (row.AnswerId.HasValue)
+                                        {
+                                            if (question.Answers == null)
+                                            {
+                                                question.Answers = new List<Answer>();
+                                            }
+                                            if (!question.Answers.Any(a => a.Id == row.AnswerId))
+                                            {
+                                                question.Answers.Add(new Answer
+                                                {
+                                                    Id = row.AnswerId.Value,
+                                                    Text = row.AnswerText
+                                                });
+                                            }
+                                        }
+
+                                        // Find or create Response
+                                        if (row.ResponseId.HasValue)
+                                        {
+                                            if (question.Responses == null)
+                                            {
+                                                question.Responses = new List<Models.Response>();
+                                            }
+                                            if (!question.Responses.Any(r => r.Id == row.ResponseId))
+                                            {
+                                                question.Responses.Add(new Models.Response
+                                                {
+                                                    Id = row.ResponseId.Value,
+                                                    TextResponse = row.ResponseText,
+                                                    User = row.UserId.HasValue ? new User
+                                                    {
+                                                        Id = row.UserId.Value,
+                                                        Username = row.Username,
+                                                        Email = row.UserEmail
+                                                    } : null
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+
+                                if (surveys.Count > 0)
+                                {
+                                    {
+                                        surveys = surveys.Where(x => x.Id == email.SurveyId).ToList();
+                                    }
+                                    ResultObject patResult13 = new ResultObject
+                                    {
+                                        Status = true,
+                                        StatusCode = StatusCodes.Status200OK,
+                                        token = null,
+                                        Message = "success",
+                                        data = surveys
+                                    };
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                    ResultObject patResult1 = new ResultObject
+                    {
+                        Status = true,
+                        StatusCode = StatusCodes.Status200OK,
+                        token = null,
+                        Message = "success",
+                        data = newUser
+                    };
+                    return Ok(patResult1);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Handle errors
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
 
         [HttpPost("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
@@ -730,7 +1108,54 @@ namespace TownsApi.Controllers
             }
         }
 
+        [HttpGet("/rrc/api/[controller]/[action]")]
+        [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult ValidateSurveyFullCompletion(int surveyId, int userId)
+        {
+            var connectionString = _connectionStringProvider.GetConnectionString("RRC_Test");
+            var connection = new Microsoft.Data.SqlClient.SqlConnection(connectionString);
+            _context = DbContextFactory.Create(connectionString);
 
+
+            var answeredQuestions = _context.SurveyResponsesInfo
+                .Where(sr => sr.SurveyId == surveyId && sr.UserId == userId)
+                .Select(sr => sr.QuestionId)
+                .Distinct()
+                .Count();
+
+            bool isCompleted = false;
+            if (answeredQuestions > 0)
+            {
+                isCompleted = true;
+            }
+            if (isCompleted)
+            {
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = isCompleted
+                };
+
+                return Ok(patResult1);
+            }
+            else
+            {
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Data Found",
+                    data = isCompleted
+                };
+
+                return Ok(patResult1);
+            }
+        }
         [HttpGet("/rrc/api/[controller]/[action]")]
         [ProducesResponseType(typeof(Towns), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -1157,8 +1582,16 @@ namespace TownsApi.Controllers
                         }
                     }
                 }
+                ResultObject patResult1 = new ResultObject
+                {
+                    Status = true,
+                    StatusCode = StatusCodes.Status200OK,
+                    token = null,
+                    Message = "Survey submitted successfully.",
+                    data = null
+                };
+                return Ok(patResult1);
 
-                return Ok("Survey submitted successfully.");
             }
             catch (Exception ex)
             {

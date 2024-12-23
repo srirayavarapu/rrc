@@ -7,6 +7,7 @@
         public string Email { get; set; }
         // Navigation property
         public ICollection<Response> Responses { get; set; }
+        public List<Survey> Surveys { get; set; }
     }
 
 }
